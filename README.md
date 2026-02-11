@@ -1,16 +1,50 @@
 # 🕌 Hedaya (هداية) - iOS Azkar App
 
-A beautiful iOS application for reciting Azkar (Islamic remembrances) with an interactive counter.
+A beautiful iOS application for reciting Azkar (Islamic remembrances) and Ad3ia (supplications) with an interactive counter. **حَصِّن يومك بذكر الله** — Fortify your day with the remembrance of Allah.
 
 **License:** This project is under a custom license. See [LICENSE](LICENSE). You may contribute to this repo but may not fork or reuse the code, design, or ideas elsewhere.
 
 ## Features
 
-- 📱 **5 Azkar Groups**: Morning, Evening, After Prayer, Sleep, and Miscellaneous
-- 🔢 **Interactive Counter**: Tap the white dot to count each Zikr
-- ✨ **Auto-Advance**: Automatically moves to the next Zikr when count is reached
-- 🎨 **Beautiful UI**: Modern design with gradient colors and smooth animations
-- 🌙 **RTL Support**: Full right-to-left layout for Arabic text
+- 📱 **7 content groups**: Morning & Evening Azkar, After Prayer, Sleep, Miscellaneous, plus **أدعية الأكثر شيوعاً** (Most Popular Supplications) and **الأدعية القرآنية** (Qur’anic Supplications)
+- 📿 **General Sebha (سبحة عامة)**: Standalone counter with custom target (e.g. 100) and reset
+- 🔢 **Interactive counter**: Tap the circle to count each Zikr; progress bar and ring show completion
+- ✨ **Auto-advance**: When the recommended count is reached, the app moves to the next Zikr
+- 📖 **References**: Each Zikr/Dua shows its source (e.g. متفق عليه، رواه البخاري، سورة البقرة)
+- 🎨 **Beautiful UI**: Gradient cards per category, teal theme for Ad3ia, smooth animations
+- 🌙 **RTL support**: Full right-to-left layout for Arabic
+
+## App Screens
+
+### Home (Main Screen)
+
+- **بسم الله الرحمن الرحيم** and app name **هداية** with tagline *حصن يومك بذكر الله*
+- Grid of cards:
+  - **سبحة عامة** (General Tasbeeh) — عدّاد ذكر (Zikr counter)
+  - **أذكار الصباح** (Morning Azkar) — 15 أذكار
+  - **أذكار المساء** (Evening Azkar) — 15 أذكار
+  - **أذكار بعد الصلاة** (After Prayer) — 7 أذكار
+  - **أذكار النوم** (Sleep) — 6 أذكار
+  - **أذكار متنوعة** (Miscellaneous) — 4 أذكار
+  - **أدعية الأكثر شيوعاً** (Most Popular Supplications) — 10 أدعية
+  - **الأدعية القرآنية** (Qur’anic Supplications) — 19 أدعية
+- Each card shows an icon, title, and count; tapping opens that group or the general counter.
+
+### Azkar / Ad3ia Group Screen
+
+- Header with group name (e.g. أذكار الصباح) and back button
+- **Progress**: “الذكر X من Y” and a horizontal progress bar
+- **White card** with the current Zikr/Dua in large Arabic (with diacritics) and the reference below
+- **Counter**: “current / target” (e.g. 4 / 10) and a circular tap button with progress ring
+- **Previous / Next** (السابق / التالي) to move between items
+- When the group is completed, a completion screen with **بارك الله فيك** and options to restart or go home
+
+### General Sebha (Counter) Screen
+
+- Large count (e.g. 0) and “من 100” (out of 100) for the target
+- Hollow progress circle that fills as you count
+- Green **tap button** to increment
+- **إعادة الصفر** (Reset to zero) to clear the count
 
 ## Quick Start
 
@@ -67,11 +101,17 @@ open Hedaya.xcodeproj
 ```
 Hedaya/
 ├── HedayaApp.swift          # App entry point
-├── Models.swift             # Data models (Zikr, AzkarGroup)
-├── AzkarData.swift          # All Arabic Azkar content
+├── Models.swift             # Data models (Zikr, AzkarGroup with tags)
+├── AzkarData.swift          # Loads groups from JSON (cached)
+├── DataLoader.swift         # Loads Data/groups.json & Data/azkar/*.json
+├── Data/                    # All content (data separate from logic)
+│   ├── groups.json          # Group metadata (id, name, icon, color, tags, order)
+│   ├── README.md            # How to add groups and tags
+│   └── azkar/               # One JSON file per group (e.g. morning.json, ad3ia_quran.json)
 ├── ContentView.swift        # Main screen with group cards
-├── AzkarGroupView.swift     # Zikr counter screen
-├── ZikrCounterView.swift    # Reusable components
+├── AzkarGroupView.swift     # Zikr/dua counter screen (progress, tap to count)
+├── GeneralSebhaView.swift   # General sebha (standalone counter with reset)
+├── ZikrCounterView.swift    # Reusable counter components
 └── Assets.xcassets/         # App assets
 ```
 
@@ -157,20 +197,29 @@ If you see "✓ Simulator started!", you're all set!
 
 ## How to Use
 
-1. **Select a Group**: Tap on any Azkar group from the main screen
-2. **Read the Zikr**: The Arabic text and reference are displayed
-3. **Count**: Tap the white circle in the center to increment the counter
-4. **Auto-Advance**: When you reach the recommended count, it automatically moves to the next Zikr
-5. **Navigate**: Use Previous/Next buttons to move between Azkar manually
-6. **Complete**: When all Azkar in a group are finished, a completion screen appears
+**From the home screen:**
 
-## Azkar Groups
+1. **General counter**: Tap **سبحة عامة** to use the standalone counter; set your target (e.g. 100), tap to count, and use **إعادة الصفر** to reset.
+2. **Azkar or Ad3ia group**: Tap any other card (e.g. أذكار الصباح or الأدعية القرآنية).
+3. **Read**: The current Zikr or Dua is shown in Arabic with its reference (e.g. متفق عليه، سورة البقرة).
+4. **Count**: Tap the circular button to increment; the ring and “X / Y” show progress.
+5. **Auto-advance**: When you reach the recommended count, the app moves to the next item.
+6. **Navigate**: Use **السابق** / **التالي** (Previous/Next) to move manually.
+7. **Finish**: When the group is complete, a completion screen appears with **بارك الله فيك**; you can restart or return home.
 
-- ☀️ **أذكار الصباح** (Morning Azkar) - 14 remembrances
-- 🌙 **أذكار المساء** (Evening Azkar) - 14 remembrances
-- 🤲 **أذكار بعد الصلاة** (After Prayer Azkar) - 7 remembrances
-- 🛏️ **أذكار النوم** (Sleep Azkar) - 6 remembrances
-- ✨ **أذكار متنوعة** (Miscellaneous Azkar) - 4 remembrances
+## Content Groups
+
+| Group | Arabic | Count | Notes |
+|-------|--------|-------|------|
+| Morning Azkar | أذكار الصباح | 15 أذكار | ☀️ |
+| Evening Azkar | أذكار المساء | 15 أذكار | 🌙 |
+| After Prayer | أذكار بعد الصلاة | 7 أذكار | 🤲 |
+| Sleep | أذكار النوم | 6 أذكار | 🛏️ |
+| Miscellaneous | أذكار متنوعة | 4 أذكار | ✨ |
+| Most Popular Supplications | أدعية الأكثر شيوعاً | 10 أدعية | Prophetic duas ﷺ |
+| Qur’anic Supplications | الأدعية القرآنية | 19 أدعية | From Quran (سورة/آية) |
+
+Content is stored in **`Hedaya/Data/`** as JSON; see **`Hedaya/Data/README.md`** to add or edit groups and tags (e.g. Ad3ia, From Quran, MostPopular).
 
 ## Deploy to Your Device
 
