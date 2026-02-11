@@ -1,0 +1,20 @@
+---
+description: When creating or adding a new feature, use Git branching so the current version is preserved. Follow the workflow in cursor.md.
+globs: 
+alwaysApply: false
+---
+
+# New feature workflow (versioning)
+
+When the user asks to **create**, **add**, or **implement** a new feature:
+
+1. **Remind them to use a feature branch** (or create it if they want):
+   - Suggest: `git checkout -b feature/short-name` (e.g. `feature/dark-mode`, `feature/export-azkar`).
+   - If the repo is not initialized, suggest the one-time setup from cursor.md first.
+
+2. **Do the feature work** on the assumption they are (or will be) on a feature branch — implement the code as requested.
+
+3. **After making code changes**, remind them to commit on the branch:
+   - `git add . && git commit -m "Add <feature summary>"`
+
+This keeps `main` (or their tagged baseline) unchanged so they can always go back. Full instructions are in **cursor.md** at the project root.
