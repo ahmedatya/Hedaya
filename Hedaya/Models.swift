@@ -8,11 +8,12 @@ struct Zikr: Identifiable, Equatable {
     let reference: String // Source/reference for the Zikr
 }
 
-/// A group of Azkar (e.g. Morning Azkar, Evening Azkar)
+/// A group of Azkar (e.g. Morning Azkar, Evening Azkar, Ad3ia). Id matches the group key in Data (e.g. "morning", "ad3ia_most_popular").
 struct AzkarGroup: Identifiable {
-    let id = UUID()
+    let id: String
     let name: String
     let icon: String
     let color: String
+    let tags: [String]  // e.g. ["Ad3ia", "MostPopular"] for أدعية
     let azkar: [Zikr]
 }

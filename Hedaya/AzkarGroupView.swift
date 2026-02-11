@@ -36,6 +36,8 @@ struct AzkarGroupView: View {
             return [Color(hex: "8E44AD"), Color(hex: "9B59B6")]
         case "misc":
             return [Color(hex: "E74C3C"), Color(hex: "E67E22")]
+        case "ad3ia":
+            return [Color(hex: "0D7377"), Color(hex: "14A3B8")]
         default:
             return [Color(hex: "1B7A4A"), Color(hex: "2ECC71")]
         }

@@ -15,6 +15,8 @@
 		A10000010000000000000006 /* ZikrCounterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000006 /* ZikrCounterView.swift */; };
 		A10000010000000000000007 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000007 /* Models.swift */; };
 		A10000010000000000000008 /* GeneralSebhaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000008 /* GeneralSebhaView.swift */; };
+		A10000010000000000000009 /* Data in Resources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000009 /* Data */; };
+		A10000010000000000000010 /* DataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000010 /* DataLoader.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +28,8 @@
 		A10000020000000000000006 /* ZikrCounterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZikrCounterView.swift; sourceTree = "<group>"; };
 		A10000020000000000000007 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		A10000020000000000000008 /* GeneralSebhaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSebhaView.swift; sourceTree = "<group>"; };
+		A10000020000000000000009 /* Data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data; sourceTree = "<group>"; };
+		A10000020000000000000010 /* DataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLoader.swift; sourceTree = "<group>"; };
 		A10000030000000000000001 /* Hedaya.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hedaya.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -55,9 +59,11 @@
 				A10000020000000000000002 /* ContentView.swift */,
 				A10000020000000000000007 /* Models.swift */,
 				A10000020000000000000004 /* AzkarData.swift */,
+				A10000020000000000000010 /* DataLoader.swift */,
 				A10000020000000000000005 /* AzkarGroupView.swift */,
 				A10000020000000000000008 /* GeneralSebhaView.swift */,
 				A10000020000000000000006 /* ZikrCounterView.swift */,
+				A10000020000000000000009 /* Data */,
 				A10000020000000000000003 /* Assets.xcassets */,
 			);
 			path = Hedaya;
@@ -130,6 +136,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A10000010000000000000003 /* Assets.xcassets in Resources */,
+				A10000010000000000000009 /* Data in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,6 +150,7 @@
 				A10000010000000000000001 /* HedayaApp.swift in Sources */,
 				A10000010000000000000002 /* ContentView.swift in Sources */,
 				A10000010000000000000004 /* AzkarData.swift in Sources */,
+				A10000010000000000000010 /* DataLoader.swift in Sources */,
 				A10000010000000000000005 /* AzkarGroupView.swift in Sources */,
 				A10000010000000000000008 /* GeneralSebhaView.swift in Sources */,
 				A10000010000000000000006 /* ZikrCounterView.swift in Sources */,
