@@ -3,6 +3,8 @@ import UserNotifications
 
 // MARK: - Constants
 private let maxCounterValue = 1_000_000
+private let goalRange = 1...10_000
+private let goalPresets: [Int] = [33, 100, 1000]
 
 /// Popular short zekr for the general sebha picker
 struct PopularZekrItem: Identifiable {
@@ -33,8 +35,9 @@ struct GeneralSebhaView: View {
     @State private var showPulse: Bool = false
     @State private var showSettings: Bool = false
     @State private var showMaxReachedAlert: Bool = false
-    @State private var maxGoalText: String = ""
     @State private var notificationPermissionRequested: Bool = false
+    /// Local goal value in settings sheet; only written to storedMaxGoal on "تم" so presets stick.
+    @State private var settingsGoalValue: Int = 100
 
     private let sebhaColors: [Color] = [Color(hex: "1B7A4A"), Color(hex: "2ECC71")]
 
@@ -186,7 +189,6 @@ struct GeneralSebhaView: View {
         .onAppear {
             count = storedCount
             if storedMaxGoal > 0 {
-                maxGoalText = "\(storedMaxGoal)"
                 requestNotificationPermissionIfNeeded()
             }
         }
@@ -198,6 +200,11 @@ struct GeneralSebhaView: View {
         }
         .sheet(isPresented: $showSettings) {
             sebhaSettingsSheet
+        }
+        .onChange(of: showSettings) { isShowing in
+            if isShowing {
+                settingsGoalValue = storedMaxGoal > 0 ? min(max(goalRange.lowerBound, storedMaxGoal), goalRange.upperBound) : 100
+            }
         }
         .alert("تم الوصول للهدف! 🎉", isPresented: $showMaxReachedAlert) {
             Button("حسناً", role: .cancel) {}
@@ -215,26 +222,38 @@ struct GeneralSebhaView: View {
                         get: { effectiveMaxGoal != nil },
                         set: { enabled in
                             if enabled {
-                                let val = Int(maxGoalText) ?? 100
-                                storedMaxGoal = min(max(1, val), maxCounterValue)
-                                maxGoalText = "\(storedMaxGoal)"
+                                storedMaxGoal = min(max(goalRange.lowerBound, settingsGoalValue), goalRange.upperBound)
                                 requestNotificationPermissionIfNeeded()
                             } else {
                                 storedMaxGoal = 0
-                                maxGoalText = ""
                             }
                         }
                     ))
                     if effectiveMaxGoal != nil {
-                        HStack {
-                            Text("العدد")
-                            TextField("مثال: 100", text: $maxGoalText)
-                                .keyboardType(.numberPad)
-                                .onChange(of: maxGoalText) { newValue in
-                                    if let n = Int(newValue), n > 0 {
-                                        storedMaxGoal = min(n, maxCounterValue)
-                                    }
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("اختيار سريع")
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundStyle(.secondary)
+                            HStack(spacing: 10) {
+                                ForEach(goalPresets, id: \.self) { preset in
+                                    presetButton(preset)
                                 }
+                            }
+                            HStack {
+                                Text("العدد")
+                                Spacer()
+                                Text("\(settingsGoalValue)")
+                                    .font(.system(size: 20, weight: .semibold, design: .rounded))
+                                    .foregroundStyle(sebhaColors[0])
+                            }
+                            Slider(
+                                value: Binding(
+                                    get: { Double(settingsGoalValue) },
+                                    set: { settingsGoalValue = Int($0.rounded()) }
+                                ),
+                                in: Double(goalRange.lowerBound)...Double(goalRange.upperBound),
+                                step: 1
+                            )
                         }
                     }
                 }
@@ -265,9 +284,8 @@ struct GeneralSebhaView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("تم") {
-                        if effectiveMaxGoal != nil, let n = Int(maxGoalText), n > 0 {
-                            storedMaxGoal = min(n, maxCounterValue)
-                            maxGoalText = "\(storedMaxGoal)"
+                        if effectiveMaxGoal != nil {
+                            storedMaxGoal = min(max(goalRange.lowerBound, settingsGoalValue), goalRange.upperBound)
                         }
                         showSettings = false
                     }
@@ -275,6 +293,23 @@ struct GeneralSebhaView: View {
             }
             .environment(\.layoutDirection, .rightToLeft)
         }
+    }
+
+    private func presetButton(_ preset: Int) -> some View {
+        Button {
+            settingsGoalValue = preset
+        } label: {
+            Text("\(preset)")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(settingsGoalValue == preset ? .white : sebhaColors[0])
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(
+                    Capsule()
+                        .fill(settingsGoalValue == preset ? sebhaColors[0] : sebhaColors[0].opacity(0.15))
+                )
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Actions
