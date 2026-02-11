@@ -16,7 +16,11 @@ A beautiful iOS application for reciting Azkar (Islamic remembrances) and Ad3ia 
 
 ## App Screens
 
+*Screenshots: add `home.png`, `azkar-group.png`, and `general-sebha.png` to [`docs/screenshots/`](docs/screenshots/) for the images below to render.*
+
 ### Home (Main Screen)
+
+![Hedaya home screen](docs/screenshots/home.png)
 
 - **بسم الله الرحمن الرحيم** and app name **هداية** with tagline *حصن يومك بذكر الله*
 - Grid of cards:
@@ -32,6 +36,8 @@ A beautiful iOS application for reciting Azkar (Islamic remembrances) and Ad3ia 
 
 ### Azkar / Ad3ia Group Screen
 
+![Azkar group screen with counter](docs/screenshots/azkar-group.png)
+
 - Header with group name (e.g. أذكار الصباح) and back button
 - **Progress**: “الذكر X من Y” and a horizontal progress bar
 - **White card** with the current Zikr/Dua in large Arabic (with diacritics) and the reference below
@@ -40,6 +46,8 @@ A beautiful iOS application for reciting Azkar (Islamic remembrances) and Ad3ia 
 - When the group is completed, a completion screen with **بارك الله فيك** and options to restart or go home
 
 ### General Sebha (Counter) Screen
+
+![General Sebha counter](docs/screenshots/general-sebha.png)
 
 - Large count (e.g. 0) and “من 100” (out of 100) for the target
 - Hollow progress circle that fills as you count
@@ -276,8 +284,15 @@ The icon features a green gradient background with a crescent moon and star, mat
 
 ## License
 
-This project is created for personal/educational use.
+Copyright (c) 2025 Ahmed Atya. All rights reserved.
+
+This project is under a **custom license**. See [LICENSE](LICENSE) for the full terms. In short:
+
+- **You may**: use the app and source for personal or educational reference, and contribute (e.g. pull requests) to this repository.
+- **You may not**: fork or reuse the code, design, or ideas in other projects; redistribute or create derivative works; or use the Hedaya name/branding elsewhere.
+
+For uses beyond this license, contact the copyright holder.
 
 ---
 
-**بارك الله فيك** - May Allah bless you
+**بارك الله فيك** — May Allah bless you
