@@ -35,6 +35,10 @@ struct ContentView: View {
                         GridItem(.flexible(), spacing: 16),
                         GridItem(.flexible(), spacing: 16)
                     ], spacing: 16) {
+                        // General Sebha (counter) - first card
+                        NavigationLink(destination: GeneralSebhaView()) {
+                            GeneralSebhaCard()
+                        }
                         ForEach(groups) { group in
                             NavigationLink(destination: AzkarGroupView(group: group)) {
                                 GroupCard(group: group)
@@ -59,6 +63,44 @@ struct ContentView: View {
             )
             .environment(\.layoutDirection, .rightToLeft)
         }
+    }
+}
+
+// MARK: - General Sebha Card
+struct GeneralSebhaCard: View {
+    private let gradientColors: [Color] = [Color(hex: "1B7A4A"), Color(hex: "2ECC71")]
+    var body: some View {
+        VStack(spacing: 14) {
+            ZStack {
+                Circle()
+                    .fill(.white.opacity(0.25))
+                    .frame(width: 60, height: 60)
+                Image(systemName: "circle.hexagongrid.fill")
+                    .font(.system(size: 28))
+                    .foregroundStyle(.white)
+            }
+            Text("سبحة عامة")
+                .font(.system(size: 17, weight: .bold))
+                .foregroundStyle(.white)
+                .multilineTextAlignment(.center)
+            Text("عدّاد ذكر")
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(.white.opacity(0.85))
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 24)
+        .padding(.horizontal, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(
+                    LinearGradient(
+                        colors: gradientColors,
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .shadow(color: gradientColors[0].opacity(0.4), radius: 8, x: 0, y: 4)
+        )
     }
 }
 
