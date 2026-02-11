@@ -21,6 +21,7 @@ private let popularZekrList: [PopularZekrItem] = [
     PopularZekrItem(text: "أَسْتَغْفِرُ اللَّهَ", recommendedCount: 100),
     PopularZekrItem(text: "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ", recommendedCount: 100),
     PopularZekrItem(text: "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", recommendedCount: 100),
+    PopularZekrItem(text: "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ ، سُبْحَانَ اللَّهِ الْعَظِيمِ", recommendedCount: 100),
 ]
 
 // MARK: - General Sebha View
