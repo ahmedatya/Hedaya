@@ -2,6 +2,8 @@
 
 A beautiful iOS application for reciting Azkar (Islamic remembrances) with an interactive counter.
 
+**License:** This project is under a custom license. See [LICENSE](LICENSE). You may contribute to this repo but may not fork or reuse the code, design, or ideas elsewhere.
+
 ## Features
 
 - 📱 **5 Azkar Groups**: Morning, Evening, After Prayer, Sleep, and Miscellaneous
