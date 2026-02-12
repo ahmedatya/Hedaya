@@ -1,6 +1,6 @@
-# 🕌 Hedaya (هداية) - iOS Azkar App
+# 🕌 Hedaya (هداية) - Azkar App (iOS & Android)
 
-A beautiful iOS application for reciting Azkar (Islamic remembrances) and Ad3ia (supplications) with an interactive counter. **حَصِّن يومك بذكر الله** — Fortify your day with the remembrance of Allah.
+A beautiful **iOS and Android** application for reciting Azkar (Islamic remembrances) and Ad3ia (supplications) with an interactive counter. **حَصِّن يومك بذكر الله** — Fortify your day with the remembrance of Allah.
 
 **License:** This project is under a custom license. See [LICENSE](LICENSE). You may contribute to this repo but may not fork or reuse the code, design, or ideas elsewhere.
 
@@ -56,13 +56,15 @@ A beautiful iOS application for reciting Azkar (Islamic remembrances) and Ad3ia 
 
 ## Quick Start
 
-### Option 1: Using Xcode (Recommended)
+### iOS
+
+#### Option 1: Using Xcode (Recommended)
 
 1. Open `Hedaya.xcodeproj` in Xcode
 2. Select an iOS Simulator (e.g., iPhone 16)
 3. Press `⌘R` to build and run
 
-### Option 2: Using Scripts
+#### Option 2: Using Scripts
 
 #### Quick Start Script (Just opens simulator)
 ```bash
@@ -104,30 +106,45 @@ open Hedaya.xcodeproj
 ./start-simulator.sh run
 ```
 
+### Android
+
+- **Install from a pre-built APK:** See [**Install on Android (APK package)**](#install-on-android-apk-package) below; a release APK is provided in the [`releases/`](releases/) folder.
+- **Build and run from source:** You need Java 17+, Android SDK, and Gradle 8.x. From the repo root:
+  ```bash
+  ./gradlew :android:assembleDebug
+  ```
+  Then install the APK from `android/build/outputs/apk/debug/android-debug.apk`, or use:
+  ```bash
+  ./scripts/test-android.sh
+  ```
+  to build, install on a connected device/emulator, and launch. See [TEST_ANDROID.md](TEST_ANDROID.md) for details.
+
 ## Project Structure
 
 ```
 Hedaya/
-├── HedayaApp.swift          # App entry point
-├── Models.swift             # Data models (Zikr, AzkarGroup with tags)
-├── AzkarData.swift          # Loads groups from JSON (cached)
-├── DataLoader.swift         # Loads Data/groups.json & Data/azkar/*.json
-├── Data/                    # All content (data separate from logic)
-│   ├── groups.json          # Group metadata (id, name, icon, color, tags, order)
-│   ├── README.md            # How to add groups and tags
-│   └── azkar/               # One JSON file per group (e.g. morning.json, ad3ia_quran.json)
-├── ContentView.swift        # Main screen with group cards
-├── AzkarGroupView.swift     # Zikr/dua counter screen (progress, tap to count)
-├── GeneralSebhaView.swift   # General sebha (standalone counter with reset)
-├── ZikrCounterView.swift    # Reusable counter components
-└── Assets.xcassets/         # App assets
+├── Hedaya/                  # iOS app (Swift)
+│   ├── HedayaApp.swift      # App entry point
+│   ├── Models.swift         # Data models (Zikr, AzkarGroup with tags)
+│   ├── AzkarData.swift      # Loads groups from JSON (cached)
+│   ├── DataLoader.swift     # Loads Data/groups.json & Data/azkar/*.json
+│   ├── Data/                # All content (shared with Android)
+│   ├── ContentView.swift    # Main screen with group cards
+│   ├── AzkarGroupView.swift # Zikr/dua counter screen
+│   ├── GeneralSebhaView.swift # General sebha (standalone counter)
+│   ├── ZikrCounterView.swift  # Reusable counter components
+│   └── Assets.xcassets/    # App assets
+├── android/                 # Android app (Kotlin, Compose)
+│   └── src/main/            # Kotlin sources, assets, resources
+├── shared/                  # Shared Kotlin code (KMP)
+├── releases/                # Pre-built APK package for install (see below)
+└── scripts/                 # Build/test scripts (e.g. test-android.sh)
 ```
 
 ## Requirements
 
-- **Xcode 15.0 or later** (full app, not just Command Line Tools)
-- iOS 17.0 or later
-- macOS 13.0 or later
+- **iOS:** Xcode 15.0 or later (full app, not just Command Line Tools), iOS 17.0+, macOS 13.0+
+- **Android:** Java 17+, Android SDK (API 24+), Gradle 8.x. See [TEST_ANDROID.md](TEST_ANDROID.md) for setup.
 
 ## Setup
 
@@ -228,6 +245,18 @@ If you see "✓ Simulator started!", you're all set!
 | Qur’anic Supplications | الأدعية القرآنية | 19 أدعية | From Quran (سورة/آية) |
 
 Content is stored in **`Hedaya/Data/`** as JSON; see **`Hedaya/Data/README.md`** to add or edit groups and tags (e.g. Ad3ia, From Quran, MostPopular).
+
+## Install on Android (APK package)
+
+A pre-built **release APK** is provided so you can install Hedaya on your Android device without building from source.
+
+- **Download:** Get the latest APK from the **[`releases/`](releases/)** folder in this repo (e.g. `hedaya-release.apk` or the file listed in [`releases/README.md`](releases/README.md)).
+- **Install:** Copy the APK to your phone (or download from GitHub on the device), open it, and allow “Install from unknown sources” if prompted. Then tap the APK to install.
+- **Build your own:** To build a release APK locally: `./gradlew :android:assembleRelease` — output is in `android/build/outputs/apk/release/`. You can copy that APK into `releases/` and commit it to offer it as the installable package.
+
+See **[`releases/README.md`](releases/README.md)** for details and how to add new APKs.
+
+---
 
 ## Install on your iPhone from GitHub
 
