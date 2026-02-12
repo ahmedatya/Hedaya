@@ -5,10 +5,10 @@ enum AzkarData {
 
     private static var cachedGroups: [AzkarGroup]?
 
-    /// All groups (metadata from Data/groups.json, content from Data/azkar/<id>.json). Cached after first load.
+    /// All groups (metadata from Data/groups.json, content from Data/azkar/<id>.json). Uses KMP shared framework when linked, otherwise Swift DataLoader. Cached after first load.
     static var allGroups: [AzkarGroup] {
         if let cached = cachedGroups { return cached }
-        let loaded = DataLoader.loadGroups()
+        let loaded = SharedAzkarLoader.allGroups
         cachedGroups = loaded
         return loaded
     }

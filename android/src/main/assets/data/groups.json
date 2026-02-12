@@ -1,0 +1,58 @@
+[
+  {
+    "id": "morning",
+    "name": "أذكار الصباح",
+    "icon": "sun.max.fill",
+    "color": "morning",
+    "tags": [],
+    "order": 1
+  },
+  {
+    "id": "evening",
+    "name": "أذكار المساء",
+    "icon": "moon.stars.fill",
+    "color": "evening",
+    "tags": [],
+    "order": 2
+  },
+  {
+    "id": "after_prayer",
+    "name": "أذكار بعد الصلاة",
+    "icon": "hands.and.sparkles.fill",
+    "color": "prayer",
+    "tags": [],
+    "order": 3
+  },
+  {
+    "id": "sleep",
+    "name": "أذكار النوم",
+    "icon": "bed.double.fill",
+    "color": "sleep",
+    "tags": [],
+    "order": 4
+  },
+  {
+    "id": "misc",
+    "name": "أذكار متنوعة",
+    "icon": "sparkles",
+    "color": "misc",
+    "tags": [],
+    "order": 5
+  },
+  {
+    "id": "ad3ia_most_popular",
+    "name": "أدعية الأكثر شيوعاً",
+    "icon": "hands.sparkles.fill",
+    "color": "ad3ia",
+    "tags": ["Ad3ia", "MostPopular"],
+    "order": 6
+  },
+  {
+    "id": "ad3ia_quran",
+    "name": "الأدعية القرآنية",
+    "icon": "book.closed.fill",
+    "color": "ad3ia",
+    "tags": ["Ad3ia", "From Quran"],
+    "order": 7
+  }
+]
