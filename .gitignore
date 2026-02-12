@@ -42,6 +42,14 @@ venv/
 *.egg-info/
 .eggs/
 
+# Gradle
+.gradle/
+gradle-*.zip
+gradle-*/
+
+# Kotlin (Gradle metadata)
+.kotlin/
+
 # IDE
 .idea/
 *.swp
