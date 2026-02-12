@@ -229,9 +229,37 @@ If you see "✓ Simulator started!", you're all set!
 
 Content is stored in **`Hedaya/Data/`** as JSON; see **`Hedaya/Data/README.md`** to add or edit groups and tags (e.g. Ad3ia, From Quran, MostPopular).
 
+## Install on your iPhone from GitHub
+
+iOS does **not** allow installing a downloaded app file (like an APK on Android). You can’t tap a link on GitHub and get an executable that installs directly. You have two practical options:
+
+### Option A: Build from source (recommended — no App Store, no paid account)
+
+You can get Hedaya onto your iPhone using the project from GitHub and a Mac with Xcode. No paid Apple Developer account is required (a free Apple ID is enough; the app will need to be re-signed every 7 days with a free account).
+
+1. **Get the project** from GitHub:
+   ```bash
+   git clone https://github.com/ahmedatya/Hedaya.git
+   cd Hedaya
+   ```
+   Or download the repo as a ZIP and open the folder.
+2. **Open in Xcode**: `open Hedaya.xcodeproj`
+3. **Connect your iPhone** with a USB cable and unlock it.
+4. **Signing**: In Xcode, select the **Hedaya** target → **Signing & Capabilities** → enable **Automatically manage signing** → choose your **Team** (Apple ID). Add your Apple ID in Xcode if needed.
+5. **Select your device** in the device menu at the top, then press **⌘R** to build and run. The app installs and launches on your device.
+6. **First time only**: On the iPhone go to **Settings → General → VPN & Device Management**, tap your Apple ID, and tap **Trust**.
+
+That’s it — you’ve installed Hedaya on your iPhone directly from the GitHub project. For more detail and troubleshooting, see [Deploy to Your Device](#deploy-to-your-device) and **`DEPLOY_TO_DEVICE.md`**.
+
+### Option B: TestFlight (if the developer publishes a beta)
+
+If the project maintainer distributes a beta via **TestFlight**, you can install from the TestFlight app without a Mac: open the invite link, install TestFlight if needed, then install Hedaya from there. This requires the maintainer to have an Apple Developer account and to upload builds to App Store Connect.
+
+---
+
 ## Deploy to Your Device
 
-To install and run Hedaya on your iPhone or iPad:
+To install and run Hedaya on your iPhone or iPad (detailed steps):
 
 ### Quick Start
 
