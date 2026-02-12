@@ -1,5 +1,29 @@
 # Testing the Android app
 
+## Quick test (script)
+
+From the repo root:
+
+```bash
+./scripts/test-android.sh
+```
+
+The script will:
+
+1. Find Java 17+ (JAVA_HOME or IntelliJ/Android Studio JBR).
+2. Find the Android SDK (ANDROID_HOME or `local.properties`).
+3. Use `./gradlew` or `gradle` to build the debug APK.
+4. Copy `Hedaya/Data` into `android/src/main/assets/data` if needed.
+5. If a device or emulator is attached: install the APK and launch the app.
+
+If no device/emulator is connected, it only builds; start an AVD (or connect a device) and run the script again to install and launch.
+
+You can pass extra Gradle options, e.g. `./scripts/test-android.sh --no-daemon`.
+
+**Gradle version:** This project requires **Gradle 8.x**. Gradle 9.x is not yet compatible. If you use system `gradle` (e.g. from Homebrew), it may be 9.x—use [Gradle 8.11.1](https://gradle.org/releases/) (extract and add `bin/` to PATH) or SDKMAN: `sdk install gradle 8.11.1`.
+
+**If you see `NoClassDefFoundError` with `./gradlew`:** the wrapper jar may be incomplete. Use Gradle 8.11.1 from the link above.
+
 ## Prerequisites
 
 1. **Java 17+** (e.g. from IntelliJ IDEA: `export JAVA_HOME="/Applications/IntelliJ IDEA.app/Contents/jbr/Contents/Home"`, or install [Eclipse Temurin](https://adoptium.net/)).

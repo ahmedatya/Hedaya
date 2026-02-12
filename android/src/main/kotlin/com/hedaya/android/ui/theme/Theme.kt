@@ -35,9 +35,9 @@ fun HedayaTheme(
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            val window = (view.context as? Activity)?.window
-            window?.statusBarColor = colorScheme.surface.toArgb()
-            WindowCompat.getInsetsController(window!!, view).isAppearanceLightStatusBar = true
+            val window = (view.context as? Activity)?.window ?: return@SideEffect
+            window.statusBarColor = colorScheme.surface.toArgb()
+            WindowCompat.getInsetsController(window, view).setAppearanceLightStatusBars(true)
         }
     }
     MaterialTheme(

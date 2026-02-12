@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.NavHostController
 import hedaya.shared.AzkarGroup
 import com.hedaya.android.ui.screens.AzkarGroupScreen
 import com.hedaya.android.ui.screens.GeneralSebhaScreen
@@ -17,7 +18,7 @@ import com.hedaya.android.ui.screens.HomeScreen
 @Composable
 fun HedayaApp(
     groups: List<AzkarGroup>,
-    navController: androidx.navigation.NavController
+    navController: NavHostController
 ) {
     CompositionLocalProvider(
         LocalLayoutDirection provides LayoutDirection.Rtl
