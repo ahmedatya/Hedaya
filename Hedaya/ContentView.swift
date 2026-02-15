@@ -2,7 +2,9 @@ import SwiftUI
 
 struct ContentView: View {
     let groups = AzkarData.allGroups
-    
+    @EnvironmentObject private var prayerTracker: PrayerTrackingStore
+    @Environment(\.scenePhase) private var scenePhase
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -65,6 +67,11 @@ struct ContentView: View {
                 .ignoresSafeArea()
             )
             .environment(\.layoutDirection, .rightToLeft)
+        }
+        .onChange(of: scenePhase) { newPhase in
+            if newPhase == .active {
+                prayerTracker.refreshTodayLog()  // day may have changed while app was backgrounded
+            }
         }
     }
 }
@@ -235,4 +242,5 @@ extension Color {
 
 #Preview {
     ContentView()
+        .environmentObject(PrayerTrackingStore())
 }

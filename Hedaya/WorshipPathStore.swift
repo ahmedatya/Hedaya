@@ -126,7 +126,6 @@ final class WorshipPathStore: ObservableObject {
     }
 
     private func refreshProgressFromLogs() {
-        let todayKey = Self.dateKey(for: Date())
         let weekStart = Self.startOfWeekKey(for: Date())
 
         if progress.weekStartKey != weekStart {
@@ -144,10 +143,6 @@ final class WorshipPathStore: ObservableObject {
         var check = Date()
         for _ in 0..<365 {
             let key = Self.dateKey(for: check)
-            if key == todayKey {
-                if isOnPath(dateKey: key) { streak += 1 }
-                break
-            }
             if isOnPath(dateKey: key) {
                 streak += 1
             } else {
@@ -189,28 +184,7 @@ final class WorshipPathStore: ObservableObject {
     }
 
     func dailyEssentials() -> [PlanEssentialItem] {
-        let areas = profile.worshipAreas.isEmpty ? WorshipArea.allCases : profile.worshipAreas
-        let pace = profile.pace ?? .balanced
-        var items: [PlanEssentialItem] = []
-        if areas.contains(.salah) {
-            items.append(PlanEssentialItem(titleAr: "صلاة الفجر", actionType: .fajr))
-            items.append(PlanEssentialItem(titleAr: "صلاة الظهر", actionType: .dhuhr))
-            items.append(PlanEssentialItem(titleAr: "صلاة العصر", actionType: .asr))
-            items.append(PlanEssentialItem(titleAr: "صلاة المغرب", actionType: .maghrib))
-            items.append(PlanEssentialItem(titleAr: "صلاة العشاء", actionType: .isha))
-        }
-        if areas.contains(.quran) { items.append(PlanEssentialItem(titleAr: "ورد قرآن قصير", actionType: .quran)) }
-        if areas.contains(.dhikr) {
-            items.append(PlanEssentialItem(titleAr: "أذكار الصباح", actionType: .dhikrSabah))
-            items.append(PlanEssentialItem(titleAr: "أذكار المساء", actionType: .dhikrMasa))
-        }
-        if areas.contains(.dua) && (pace == .balanced || pace == .ambitious) {
-            items.append(PlanEssentialItem(titleAr: "دعاء بعد الصلاة", actionType: .dua))
-        }
-        if pace == .gentle {
-            return Array(items.prefix(6))  // e.g. 5 prayers + Quran, or fewer if no salah
-        }
-        return items  // balanced/ambitious: show all (5 prayers + Quran + dhikr + optional dua)
+        profile.dailyEssentials()
     }
 
     func optionalBonuses() -> [PlanBonusItem] {

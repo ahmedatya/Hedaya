@@ -10,13 +10,6 @@ private let prayerTimeFormatter: DateFormatter = {
     return f
 }()
 
-private let currentTimeFormatter: DateFormatter = {
-    let f = DateFormatter()
-    f.dateFormat = "h:mm"
-    f.locale = Locale(identifier: "ar")
-    return f
-}()
-
 private let islamicDateFormatter: DateFormatter = {
     let f = DateFormatter()
     f.calendar = Calendar(identifier: .islamicUmmAlQura)
@@ -68,6 +61,7 @@ struct PrayerTrackingView: View {
         .onAppear {
             locationManager.requestLocation()
             store.coordinate = locationManager.coordinate
+            store.refreshTodayLog()  // ensure correct day when opening tree (e.g. after midnight)
         }
         .onChange(of: coordinateKey(locationManager.coordinate)) { _ in
             store.coordinate = locationManager.coordinate
@@ -286,15 +280,6 @@ private struct PrayerTreeGraphicContainerView: View {
                         showMercyDaySheet = true
                     }
                     .font(.system(size: 14))
-                    .foregroundStyle(Color(hex: "1B7A4A"))
-                }
-            }
-            if !hasTreeArt {
-                ToolbarItem(placement: .primaryAction) {
-                    Button(showDebugOverlay ? "إخفاء التصحيح" : "عرض التصحيح") {
-                        showDebugOverlay.toggle()
-                    }
-                    .font(.system(size: 13))
                     .foregroundStyle(Color(hex: "1B7A4A"))
                 }
             }
@@ -563,14 +548,18 @@ private struct PrayerTreeGraphicView: View {
                                 .frame(width: geo.size.width, height: geo.size.height)
                         }
                         overlayStateOnly(layout: layout)
+                        #if DEBUG
                         if showDebugOverlay {
                             debugOverlay(layout: layout)
                         }
+                        #endif
                     }
                     .contentShape(Rectangle())
+                    #if DEBUG
                     .onLongPressGesture(minimumDuration: 1.2) {
                         showDebugOverlay.toggle()
                     }
+                    #endif
                 }
             }
         }
@@ -758,7 +747,7 @@ private struct IslamicDateTimeView: View {
     var body: some View {
         TimelineView(.periodic(from: .now, by: 60)) { context in
             VStack(spacing: 2) {
-                Text(currentTimeFormatter.string(from: context.date))
+                Text(formatPrayerTime(context.date))
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(Color(hex: "2D4A3E"))
                 Text(formatIslamicDate(context.date))

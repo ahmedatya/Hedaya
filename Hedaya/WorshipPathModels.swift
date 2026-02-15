@@ -83,6 +83,33 @@ struct WorshipProfile: Codable, Equatable {
     }
 
     var hasCompletedOnboarding: Bool { completedAt != nil }
+
+    /// Build daily essentials from worship areas and pace. Single source of truth for both
+    /// WorshipPathStore (plan views) and PrayerTrackingStore (tree/streak logic).
+    func dailyEssentials() -> [PlanEssentialItem] {
+        let areas = worshipAreas.isEmpty ? WorshipArea.allCases : worshipAreas
+        let resolvedPace = self.pace ?? .balanced
+        var items: [PlanEssentialItem] = []
+        if areas.contains(.salah) {
+            items.append(PlanEssentialItem(titleAr: "صلاة الفجر", actionType: .fajr))
+            items.append(PlanEssentialItem(titleAr: "صلاة الظهر", actionType: .dhuhr))
+            items.append(PlanEssentialItem(titleAr: "صلاة العصر", actionType: .asr))
+            items.append(PlanEssentialItem(titleAr: "صلاة المغرب", actionType: .maghrib))
+            items.append(PlanEssentialItem(titleAr: "صلاة العشاء", actionType: .isha))
+        }
+        if areas.contains(.quran) { items.append(PlanEssentialItem(titleAr: "ورد قرآن قصير", actionType: .quran)) }
+        if areas.contains(.dhikr) {
+            items.append(PlanEssentialItem(titleAr: "أذكار الصباح", actionType: .dhikrSabah))
+            items.append(PlanEssentialItem(titleAr: "أذكار المساء", actionType: .dhikrMasa))
+        }
+        if areas.contains(.dua) && (resolvedPace == .balanced || resolvedPace == .ambitious) {
+            items.append(PlanEssentialItem(titleAr: "دعاء بعد الصلاة", actionType: .dua))
+        }
+        if resolvedPace == .gentle {
+            return Array(items.prefix(6))
+        }
+        return items
+    }
 }
 
 enum LoggedActionType: String, Codable, CaseIterable {

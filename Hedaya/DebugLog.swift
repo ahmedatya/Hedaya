@@ -1,10 +1,12 @@
-// MARK: - Debug logger — writes to file for inspection
+// MARK: - Debug logger — writes to file for inspection (DEBUG only)
 // Log file: Documents/hedaya_debug.log (in app sandbox)
 // To copy to project after running: ./copy-debug-log.sh
+// In release builds, log() and logFilePath are no-ops to avoid disk I/O and console output.
 
 import Foundation
 
 enum DebugLog {
+#if DEBUG
     private static let queue = DispatchQueue(label: "com.hedaya.debuglog")
     private static var fileURL: URL?
     private static var hasLoggedPath = false
@@ -45,4 +47,11 @@ enum DebugLog {
     static var logFilePath: String {
         urlForLogFile().path
     }
+#else
+    static func log(_ category: String, _ message: String) {
+        // No-op in release: avoid disk I/O, console output, and log file growth
+    }
+
+    static var logFilePath: String { "" }
+#endif
 }
