@@ -50,6 +50,9 @@ gradle-*/
 # Kotlin (Gradle metadata)
 .kotlin/
 
+# Debug log (generated, copy from simulator)
+hedaya_debug.log
+
 # IDE
 .idea/
 *.swp
