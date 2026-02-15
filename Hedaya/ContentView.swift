@@ -2,7 +2,9 @@ import SwiftUI
 
 struct ContentView: View {
     let groups = AzkarData.allGroups
-    
+    @EnvironmentObject private var prayerTracker: PrayerTrackingStore
+    @Environment(\.scenePhase) private var scenePhase
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -35,7 +37,7 @@ struct ContentView: View {
                         GridItem(.flexible(), spacing: 16),
                         GridItem(.flexible(), spacing: 16)
                     ], spacing: 16) {
-                        // General Sebha (counter) - first card
+                        // General Sebha (counter)
                         NavigationLink(destination: GeneralSebhaView()) {
                             GeneralSebhaCard()
                         }
@@ -48,6 +50,9 @@ struct ContentView: View {
                     .padding(.horizontal)
                 }
                 .padding(.bottom, 30)
+            }
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                HomeBottomBar()
             }
             .background(
                 LinearGradient(
@@ -63,6 +68,49 @@ struct ContentView: View {
             )
             .environment(\.layoutDirection, .rightToLeft)
         }
+        .onChange(of: scenePhase) { newPhase in
+            if newPhase == .active {
+                prayerTracker.refreshTodayLog()  // day may have changed while app was backgrounded
+            }
+        }
+    }
+}
+
+// MARK: - Home bottom bar (horizontal panel)
+struct HomeBottomBar: View {
+    var body: some View {
+        HStack(spacing: 12) {
+            NavigationLink(destination: MyWorshipPathView()) {
+                HomeBarPill(icon: "leaf.circle.fill", title: "مسيرتي")
+            }
+            NavigationLink(destination: GeneralSebhaView()) {
+                HomeBarPill(icon: "circle.hexagongrid.fill", title: "سبحة")
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
+        .background(Color.white.opacity(0.85))
+    }
+}
+
+private struct HomeBarPill: View {
+    let icon: String
+    let title: String
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.system(size: 16))
+            Text(title)
+                .font(.system(size: 15, weight: .semibold))
+        }
+        .foregroundStyle(Color(hex: "1B7A4A"))
+        .padding(.horizontal, 18)
+        .padding(.vertical, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 22)
+                .fill(Color(hex: "1B7A4A").opacity(0.12))
+        )
+        .frame(maxWidth: .infinity)
     }
 }
 
@@ -194,4 +242,5 @@ extension Color {
 
 #Preview {
     ContentView()
+        .environmentObject(PrayerTrackingStore())
 }
