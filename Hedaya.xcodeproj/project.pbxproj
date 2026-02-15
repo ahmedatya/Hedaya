@@ -18,6 +18,20 @@
 		A10000010000000000000009 /* Data in Resources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000009 /* Data */; };
 		A10000010000000000000010 /* DataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000010 /* DataLoader.swift */; };
 		A10000010000000000000011 /* SharedAzkarLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000011 /* SharedAzkarLoader.swift */; };
+		A10000010000000000000012 /* WorshipPathModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000012 /* WorshipPathModels.swift */; };
+		A10000010000000000000013 /* WorshipPathStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000013 /* WorshipPathStore.swift */; };
+		A10000010000000000000014 /* WorshipPathOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000014 /* WorshipPathOnboardingView.swift */; };
+		A10000010000000000000015 /* MyWorshipPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000015 /* MyWorshipPathView.swift */; };
+		A10000010000000000000016 /* PrayerTrackingModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000016 /* PrayerTrackingModels.swift */; };
+		A10000010000000000000017 /* PrayerLocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000017 /* PrayerLocationManager.swift */; };
+		A10000010000000000000018 /* PrayerTrackingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000018 /* PrayerTrackingStore.swift */; };
+		A10000010000000000000019 /* PrayerTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000019 /* PrayerTrackingView.swift */; };
+		A10000010000000000000021 /* PrayerTreeMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000020 /* PrayerTreeMapping.swift */; };
+		A10000010000000000000024 /* PrayerTreeScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000022 /* PrayerTreeScene.swift */; };
+		A10000010000000000000022 /* PrayerTree.svg in Resources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000021 /* PrayerTree.svg */; };
+		A10000010000000000000025 /* TreeArt.svg in Resources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000023 /* TreeArt.svg */; };
+		A10000010000000000000020 /* Adhan in Frameworks */ = {isa = PBXBuildFile; productRef = A10000A20000000000000001 /* Adhan */; };
+		A10000010000000000000026 /* SVGView in Frameworks */ = {isa = PBXBuildFile; productRef = A10000A40000000000000001 /* SVGView */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +46,18 @@
 		A10000020000000000000009 /* Data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data; sourceTree = "<group>"; };
 		A10000020000000000000010 /* DataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLoader.swift; sourceTree = "<group>"; };
 		A10000020000000000000011 /* SharedAzkarLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedAzkarLoader.swift; sourceTree = "<group>"; };
+		A10000020000000000000012 /* WorshipPathModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorshipPathModels.swift; sourceTree = "<group>"; };
+		A10000020000000000000013 /* WorshipPathStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorshipPathStore.swift; sourceTree = "<group>"; };
+		A10000020000000000000014 /* WorshipPathOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorshipPathOnboardingView.swift; sourceTree = "<group>"; };
+		A10000020000000000000015 /* MyWorshipPathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyWorshipPathView.swift; sourceTree = "<group>"; };
+		A10000020000000000000016 /* PrayerTrackingModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTrackingModels.swift; sourceTree = "<group>"; };
+		A10000020000000000000017 /* PrayerLocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerLocationManager.swift; sourceTree = "<group>"; };
+		A10000020000000000000018 /* PrayerTrackingStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTrackingStore.swift; sourceTree = "<group>"; };
+		A10000020000000000000019 /* PrayerTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTrackingView.swift; sourceTree = "<group>"; };
+		A10000020000000000000020 /* PrayerTreeMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTreeMapping.swift; sourceTree = "<group>"; };
+		A10000020000000000000021 /* PrayerTree.svg */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrayerTree.svg; sourceTree = "<group>"; };
+		A10000020000000000000022 /* PrayerTreeScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTreeScene.swift; sourceTree = "<group>"; };
+		A10000020000000000000023 /* TreeArt.svg */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = TreeArt.svg; sourceTree = "<group>"; };
 		A10000030000000000000001 /* Hedaya.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hedaya.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -40,6 +66,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A10000010000000000000020 /* Adhan in Frameworks */,
+				A10000010000000000000026 /* SVGView in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -66,6 +94,18 @@
 				A10000020000000000000005 /* AzkarGroupView.swift */,
 				A10000020000000000000008 /* GeneralSebhaView.swift */,
 				A10000020000000000000006 /* ZikrCounterView.swift */,
+				A10000020000000000000012 /* WorshipPathModels.swift */,
+				A10000020000000000000013 /* WorshipPathStore.swift */,
+				A10000020000000000000014 /* WorshipPathOnboardingView.swift */,
+				A10000020000000000000015 /* MyWorshipPathView.swift */,
+				A10000020000000000000016 /* PrayerTrackingModels.swift */,
+				A10000020000000000000017 /* PrayerLocationManager.swift */,
+				A10000020000000000000018 /* PrayerTrackingStore.swift */,
+				A10000020000000000000019 /* PrayerTrackingView.swift */,
+				A10000020000000000000020 /* PrayerTreeMapping.swift */,
+				A10000020000000000000021 /* PrayerTree.svg */,
+				A10000020000000000000022 /* PrayerTreeScene.swift */,
+				A10000020000000000000023 /* TreeArt.svg */,
 				A10000020000000000000009 /* Data */,
 				A10000020000000000000003 /* Assets.xcassets */,
 			);
@@ -96,6 +136,10 @@
 			dependencies = (
 			);
 			name = Hedaya;
+			packageProductDependencies = (
+				A10000A20000000000000001 /* Adhan */,
+				A10000A40000000000000001 /* SVGView */,
+			);
 			productName = Hedaya;
 			productReference = A10000030000000000000001 /* Hedaya.app */;
 			productType = "com.apple.product-type.application";
@@ -124,6 +168,10 @@
 				Base,
 			);
 			mainGroup = A10000050000000000000001;
+			packageReferences = (
+				A10000A10000000000000001 /* XCRemoteSwiftPackageReference "adhan-swift" */,
+				A10000A30000000000000001 /* XCRemoteSwiftPackageReference "SVGView" */,
+			);
 			productRefGroup = A10000050000000000000003 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -140,6 +188,8 @@
 			files = (
 				A10000010000000000000003 /* Assets.xcassets in Resources */,
 				A10000010000000000000009 /* Data in Resources */,
+				A10000010000000000000022 /* PrayerTree.svg in Resources */,
+				A10000010000000000000025 /* TreeArt.svg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -159,10 +209,52 @@
 				A10000010000000000000006 /* ZikrCounterView.swift in Sources */,
 				A10000010000000000000007 /* Models.swift in Sources */,
 				A10000010000000000000011 /* SharedAzkarLoader.swift in Sources */,
+				A10000010000000000000012 /* WorshipPathModels.swift in Sources */,
+				A10000010000000000000013 /* WorshipPathStore.swift in Sources */,
+				A10000010000000000000014 /* WorshipPathOnboardingView.swift in Sources */,
+				A10000010000000000000015 /* MyWorshipPathView.swift in Sources */,
+				A10000010000000000000016 /* PrayerTrackingModels.swift in Sources */,
+				A10000010000000000000017 /* PrayerLocationManager.swift in Sources */,
+				A10000010000000000000018 /* PrayerTrackingStore.swift in Sources */,
+				A10000010000000000000019 /* PrayerTrackingView.swift in Sources */,
+				A10000010000000000000021 /* PrayerTreeMapping.swift in Sources */,
+				A10000010000000000000024 /* PrayerTreeScene.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A10000A10000000000000001 /* XCRemoteSwiftPackageReference "adhan-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/batoulapps/adhan-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.4.0;
+			};
+		};
+		A10000A30000000000000001 /* XCRemoteSwiftPackageReference "SVGView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/exyte/SVGView";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A10000A20000000000000001 /* Adhan */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A10000A10000000000000001 /* XCRemoteSwiftPackageReference "adhan-swift" */;
+			productName = Adhan;
+		};
+		A10000A40000000000000001 /* SVGView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A10000A30000000000000001 /* XCRemoteSwiftPackageReference "SVGView" */;
+			productName = SVGView;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCBuildConfiguration section */
 		A100000A0000000000000001 /* Debug */ = {
@@ -297,6 +389,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "هداية";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "لحساب أوقات الصلاة حسب موقعك";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -327,6 +420,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "هداية";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "لحساب أوقات الصلاة حسب موقعك";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
