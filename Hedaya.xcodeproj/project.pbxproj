@@ -32,6 +32,7 @@
 		A10000010000000000000025 /* TreeArt.svg in Resources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000023 /* TreeArt.svg */; };
 		A10000010000000000000020 /* Adhan in Frameworks */ = {isa = PBXBuildFile; productRef = A10000A20000000000000001 /* Adhan */; };
 		A10000010000000000000026 /* SVGView in Frameworks */ = {isa = PBXBuildFile; productRef = A10000A40000000000000001 /* SVGView */; };
+		A10000010000000000000027 /* DebugLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000027 /* DebugLog.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +59,7 @@
 		A10000020000000000000021 /* PrayerTree.svg */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrayerTree.svg; sourceTree = "<group>"; };
 		A10000020000000000000022 /* PrayerTreeScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTreeScene.swift; sourceTree = "<group>"; };
 		A10000020000000000000023 /* TreeArt.svg */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = TreeArt.svg; sourceTree = "<group>"; };
+		A10000020000000000000027 /* DebugLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLog.swift; sourceTree = "<group>"; };
 		A10000030000000000000001 /* Hedaya.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hedaya.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -86,6 +88,7 @@
 			isa = PBXGroup;
 			children = (
 				A10000020000000000000001 /* HedayaApp.swift */,
+				A10000020000000000000027 /* DebugLog.swift */,
 				A10000020000000000000002 /* ContentView.swift */,
 				A10000020000000000000007 /* Models.swift */,
 				A10000020000000000000004 /* AzkarData.swift */,
@@ -212,6 +215,7 @@
 				A10000010000000000000012 /* WorshipPathModels.swift in Sources */,
 				A10000010000000000000013 /* WorshipPathStore.swift in Sources */,
 				A10000010000000000000014 /* WorshipPathOnboardingView.swift in Sources */,
+				A10000010000000000000027 /* DebugLog.swift in Sources */,
 				A10000010000000000000015 /* MyWorshipPathView.swift in Sources */,
 				A10000010000000000000016 /* PrayerTrackingModels.swift in Sources */,
 				A10000010000000000000017 /* PrayerLocationManager.swift in Sources */,

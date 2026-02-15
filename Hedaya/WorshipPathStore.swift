@@ -52,9 +52,11 @@ final class WorshipPathStore: ObservableObject {
     }
 
     func completeOnboarding(with profile: WorshipProfile) {
+        DebugLog.log("WorshipPathStore", "completeOnboarding called")
         var p = profile
         p.completedAt = Date()
         updateProfile(p)
+        DebugLog.log("WorshipPathStore", "completeOnboarding done, hasCompletedOnboarding=\(p.hasCompletedOnboarding)")
     }
 
     private func applyProfileToProgress() {

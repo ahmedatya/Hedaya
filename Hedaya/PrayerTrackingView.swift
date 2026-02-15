@@ -38,7 +38,7 @@ import SVGView
 
 struct PrayerTrackingView: View {
     @StateObject private var locationManager = PrayerLocationManager()
-    @StateObject private var store = PrayerTrackingStore()
+    @EnvironmentObject private var store: PrayerTrackingStore
 
     /// Converts coordinate to an Equatable key so we can use it with onChange(of:).
     private func coordinateKey(_ coord: CLLocationCoordinate2D?) -> String? {
@@ -117,30 +117,90 @@ struct PrayerTrackingView: View {
     }
 }
 
+/// Maps tree dhikr branches to Azkar groups for "read first" navigation.
+private func azkarGroupForBranch(_ branch: BranchType) -> AzkarGroup? {
+    let id: String?
+    switch branch {
+    case .morningZikr: id = "morning"
+    case .eveningZikr: id = "evening"
+    case .sleepingZikr: id = "sleep"
+    default: id = nil
+    }
+    guard let id else { return nil }
+    return AzkarData.allGroups.first { $0.id == id }
+}
+
 // MARK: - Container so we can hold debug state and add toolbar
 private struct PrayerTreeGraphicContainerView: View {
     @ObservedObject var store: PrayerTrackingStore
     @State private var showDebugOverlay = false
     @State private var showCalculationSettings = false
+    @State private var azkarGroupToPresent: AzkarGroup?
 
     private var hasTreeArt: Bool {
         Bundle.main.url(forResource: "TreeArt", withExtension: "svg") != nil
     }
 
+    private func levelNameAr(_ level: PathLevel) -> String {
+        switch level {
+        case .seeds: return "البذور"
+        case .roots: return "الجذور"
+        case .growth: return "النمو"
+        case .steadfast: return "الثبات"
+        case .blossom: return "الإيناع"
+        }
+    }
+
+    private var formattedDate: String {
+        let f = DateFormatter()
+        f.dateFormat = "EEEE، d MMMM"
+        f.locale = Locale(identifier: "ar")
+        return f.string(from: Date())
+    }
+
     var body: some View {
-        Group {
-            if hasTreeArt {
-                PrayerTreeGraphicView(store: store, showDebugOverlay: $showDebugOverlay)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding(.horizontal, 8)
-            } else {
-                ScrollView {
-                    PrayerTreeGraphicView(store: store, showDebugOverlay: $showDebugOverlay)
-                        .frame(minHeight: 560)
-                        .padding(.vertical, 24)
-                        .padding(.horizontal, 16)
+        VStack(spacing: 0) {
+            // Compact header: date, streak, level
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(formattedDate)
+                        .font(.system(size: 13))
+                        .foregroundStyle(Color(hex: "2D4A3E").opacity(0.9))
+                    HStack(spacing: 6) {
+                        Text(levelNameAr(store.currentLevel))
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(Color(hex: "1B7A4A"))
+                        Text("•")
+                            .foregroundStyle(Color(hex: "2D4A3E").opacity(0.6))
+                        Text("\(store.streakDays) أيام على المسيرة")
+                            .font(.system(size: 13))
+                            .foregroundStyle(Color(hex: "2D4A3E").opacity(0.9))
+                    }
+                }
+                Spacer()
+                ProgressView(value: store.levelProgress)
+                    .tint(Color(hex: "2ECC71"))
+                    .frame(width: 56)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(Color.white.opacity(0.6))
+
+            Group {
+                if hasTreeArt {
+                    PrayerTreeGraphicView(store: store, showDebugOverlay: $showDebugOverlay, onBranchTap: handleBranchTap)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .padding(.horizontal, 8)
+                } else {
+                    ScrollView {
+                        PrayerTreeGraphicView(store: store, showDebugOverlay: $showDebugOverlay, onBranchTap: handleBranchTap)
+                            .frame(minHeight: 560)
+                            .padding(.vertical, 24)
+                            .padding(.horizontal, 16)
+                    }
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .navigationTitle("متابعة الصلاة")
@@ -166,6 +226,27 @@ private struct PrayerTreeGraphicContainerView: View {
         }
         .sheet(isPresented: $showCalculationSettings) {
             PrayerCalculationSettingsView(store: store)
+        }
+        .sheet(item: $azkarGroupToPresent) { group in
+            NavigationStack {
+                AzkarGroupView(group: group)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("إغلاق") { azkarGroupToPresent = nil }
+                                .foregroundStyle(Color(hex: "1B7A4A"))
+                        }
+                    }
+            }
+            .environmentObject(store)
+            .environment(\.layoutDirection, .rightToLeft)
+        }
+    }
+
+    private func handleBranchTap(_ branch: BranchType) {
+        if let group = azkarGroupForBranch(branch) {
+            azkarGroupToPresent = group
+        } else {
+            store.markBranchDone(branch)
         }
     }
 }
@@ -220,6 +301,7 @@ private struct PrayerCalculationSettingsView: View {
 private struct PrayerTreeGraphicView: View {
     @ObservedObject var store: PrayerTrackingStore
     @Binding var showDebugOverlay: Bool
+    var onBranchTap: (BranchType) -> Void = { _ in }
     @State private var scene: PrayerTreeScene?
     @State private var tapHandler: PrayerTreeTapHandler?
 
@@ -288,7 +370,7 @@ private struct PrayerTreeGraphicView: View {
                                 let pt = PrayerTreeGraphicView.branchPositionForSVG(branch, layout: layout, size: geo.size)
                                 let done = store.todayLog.branchesCompleted.contains(branch)
                                 Button {
-                                    if !done { store.markBranchDone(branch) }
+                                    if !done { onBranchTap(branch) }
                                 } label: {
                                     BranchTrackerPill(title: branch.titleAr, isDone: done)
                                 }
@@ -355,7 +437,7 @@ private struct PrayerTreeGraphicView: View {
         .onAppear {
             if scene == nil && !useSVG {
                 let s = PrayerTreeScene(size: CGSize(width: 400, height: 560))
-                let h = PrayerTreeTapHandler(store: store)
+                let h = PrayerTreeTapHandler(store: store, onBranchTap: onBranchTap)
                 s.tapDelegate = h
                 scene = s
                 tapHandler = h
@@ -456,7 +538,7 @@ private struct PrayerTreeGraphicView: View {
                 let pt = layout.branchLeafCenter(at: index)
                 let done = store.todayLog.branchesCompleted.contains(branch)
                 Button {
-                    if !done { store.markBranchDone(branch) }
+                    if !done { onBranchTap(branch) }
                 } label: { Color.clear.frame(width: layout.branchNodeSize + 8, height: layout.branchNodeSize + 8) }
                 .buttonStyle(.plain)
                 .disabled(done)
@@ -1103,5 +1185,6 @@ private struct FlowLayout: Layout {
 #Preview {
     NavigationStack {
         PrayerTrackingView()
+            .environmentObject(PrayerTrackingStore())
     }
 }

@@ -1,7 +1,21 @@
 import SwiftUI
 
+/// Maps Azkar groups to Prayer Tree branches so completion marks the tree.
+private func branchForGroup(_ group: AzkarGroup) -> BranchType? {
+    switch group.id {
+    case "morning": return .morningZikr
+    case "evening": return .eveningZikr
+    case "sleep": return .sleepingZikr
+    case "after_prayer", "misc": return .extraZikr
+    default:
+        if group.tags.contains("Ad3ia") { return .extraDuaa }
+        return nil
+    }
+}
+
 struct AzkarGroupView: View {
     let group: AzkarGroup
+    @EnvironmentObject private var prayerTracker: PrayerTrackingStore
     @State private var currentIndex: Int = 0
     @State private var currentCount: Int = 0
     @State private var isCompleted: Bool = false
@@ -366,6 +380,9 @@ struct AzkarGroupView: View {
                     }
                 } else {
                     // All azkar completed!
+                    if let branch = branchForGroup(group) {
+                        prayerTracker.markBranchDone(branch)
+                    }
                     withAnimation {
                         isCompleted = true
                     }
@@ -403,5 +420,6 @@ struct AzkarGroupView: View {
 #Preview {
     NavigationStack {
         AzkarGroupView(group: AzkarData.allGroups[0])
+            .environmentObject(PrayerTrackingStore())
     }
 }

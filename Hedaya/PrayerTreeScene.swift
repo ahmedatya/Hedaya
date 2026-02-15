@@ -184,9 +184,11 @@ final class PrayerTreeScene: SKScene {
 // MARK: - Tap handler (bridge to store)
 final class PrayerTreeTapHandler: PrayerTreeSceneDelegate {
     private weak var store: PrayerTrackingStore?
+    private var onBranchTap: ((BranchType) -> Void)?
 
-    init(store: PrayerTrackingStore) {
+    init(store: PrayerTrackingStore, onBranchTap: ((BranchType) -> Void)? = nil) {
         self.store = store
+        self.onBranchTap = onBranchTap
     }
 
     func prayerTreeScene(_ scene: PrayerTreeScene, didTapNodeNamed name: String) {
@@ -197,7 +199,12 @@ final class PrayerTreeTapHandler: PrayerTreeSceneDelegate {
         case .quran:
             if !store.todayLog.quranDone { store.markQuranDone() }
         case .branch(let branch):
-            if !store.todayLog.branchesCompleted.contains(branch) { store.markBranchDone(branch) }
+            if store.todayLog.branchesCompleted.contains(branch) { return }
+            if let cb = onBranchTap {
+                DispatchQueue.main.async { cb(branch) }
+            } else {
+                store.markBranchDone(branch)
+            }
         }
     }
 }

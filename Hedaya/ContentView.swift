@@ -74,10 +74,7 @@ struct HomeBottomBar: View {
     var body: some View {
         HStack(spacing: 12) {
             NavigationLink(destination: MyWorshipPathView()) {
-                HomeBarPill(icon: "leaf.fill", title: "مسيرتي")
-            }
-            NavigationLink(destination: PrayerTrackingView()) {
-                HomeBarPill(icon: "leaf.circle.fill", title: "متابعة الصلاة")
+                HomeBarPill(icon: "leaf.circle.fill", title: "مسيرتي")
             }
             NavigationLink(destination: GeneralSebhaView()) {
                 HomeBarPill(icon: "circle.hexagongrid.fill", title: "سبحة")

@@ -5,40 +5,38 @@ import SwiftUI
 struct MyWorshipPathView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var store = WorshipPathStore()
-    @State private var path: [PathScreen] = []
+    @State private var screen: PathScreen = .intro
 
-    private enum PathScreen: Hashable {
+    private enum PathScreen {
         case intro
         case onboarding
         case plan
-        case daily
+        case tree
     }
 
     var body: some View {
-        NavigationStack(path: $path) {
-            rootView
-                .navigationDestination(for: PathScreen.self) { screen in
-                    switch screen {
-                    case .intro: WorshipPathIntroView(onStart: { path.append(.onboarding) }, onSkip: { dismiss() })
-                    case .onboarding: WorshipPathOnboardingView(store: store, onComplete: { profile in
-                        store.completeOnboarding(with: profile)
-                        path.append(.plan)
-                    })
-                    case .plan: WorshipPathPlanView(store: store, onContinue: { path.append(.daily) })
-                    case .daily: WorshipPathDailyView(store: store)
-                    }
-                }
+        Group {
+            switch screen {
+            case .intro:
+                WorshipPathIntroView(onStart: { screen = .onboarding }, onSkip: { dismiss() })
+            case .onboarding:
+                WorshipPathOnboardingView(store: store, onComplete: { profile in
+                    DebugLog.log("WorshipPath", "Onboarding onComplete, switching to .tree")
+                    store.completeOnboarding(with: profile)
+                    screen = .tree
+                })
+            case .plan:
+                WorshipPathPlanView(store: store, onContinue: { screen = .tree })
+            case .tree:
+                PrayerTrackingView()
+                    .navigationBarTitleDisplayMode(.inline)
+            }
         }
         .environment(\.layoutDirection, .rightToLeft)
-    }
-
-    @ViewBuilder
-    private var rootView: some View {
-        if store.profile.hasCompletedOnboarding && path.isEmpty {
-            WorshipPathDailyView(store: store)
-                .navigationBarTitleDisplayMode(.inline)
-        } else {
-            WorshipPathIntroView(onStart: { path.append(.onboarding) }, onSkip: { dismiss() })
+        .onAppear {
+            if store.profile.hasCompletedOnboarding {
+                screen = .tree
+            }
         }
     }
 }
@@ -140,7 +138,7 @@ struct WorshipPathPlanView: View {
                     .foregroundStyle(Color(hex: "2D4A3E").opacity(0.9))
                     .padding(.horizontal)
                 Button(action: onContinue) {
-                    Text("متابعة إلى يومي")
+                    Text("متابعة إلى الشجرة")
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
@@ -157,6 +155,7 @@ struct WorshipPathPlanView: View {
     }
 }
 
+@available(*, deprecated, message: "Replaced by PrayerTrackingView (Tree) as the daily hub")
 struct WorshipPathDailyView: View {
     @ObservedObject var store: WorshipPathStore
     @State private var showPlan = false

@@ -14,6 +14,9 @@ final class PrayerTrackingStore: ObservableObject {
     @Published private(set) var todayLog: PrayerDayLog
     @Published private(set) var prayerTimes: PrayerTimesToday?
     @Published private(set) var locationDescription: String?
+    @Published private(set) var streakDays: Int = 0
+    @Published private(set) var currentLevel: PathLevel = .seeds
+    @Published private(set) var levelProgress: Double = 0
     @Published var coordinate: CLLocationCoordinate2D? {
         didSet {
             computePrayerTimes()
@@ -46,6 +49,7 @@ final class PrayerTrackingStore: ObservableObject {
             ?? PrayerCalculationMethod.muslimWorldLeague.rawValue
         self.calculationMethod = PrayerCalculationMethod(rawValue: methodRaw)
             ?? .muslimWorldLeague
+        refreshProgress()
     }
 
     static func dateKey(for date: Date = Date()) -> String {
@@ -65,6 +69,59 @@ final class PrayerTrackingStore: ObservableObject {
     private func saveDailyLogs() {
         guard let data = try? encoder.encode(dailyLogs) else { return }
         defaults.set(data, forKey: StorageKey.dailyLogs)
+        refreshProgress()
+    }
+
+    private static func dateFrom(_ dateKey: String) -> Date? {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.timeZone = TimeZone.current
+        return formatter.date(from: dateKey)
+    }
+
+    private func isOnPath(dateKey: String) -> Bool {
+        guard let log = dailyLogs[dateKey] else { return false }
+        return !log.prayersCompleted.isEmpty
+            || !log.sunnahCompleted.isEmpty
+            || log.sunriseSunnahDone
+            || log.quranDone
+            || !log.branchesCompleted.isEmpty
+    }
+
+    private func refreshProgress() {
+        let todayKey = Self.dateKey(for: Date())
+        let cal = Calendar.current
+        var streak = 0
+        var check = Date()
+        for _ in 0..<365 {
+            let key = Self.dateKey(for: check)
+            if key == todayKey {
+                if isOnPath(dateKey: key) { streak += 1 }
+                break
+            }
+            if isOnPath(dateKey: key) {
+                streak += 1
+            } else {
+                break
+            }
+            check = cal.date(byAdding: .day, value: -1, to: check) ?? check
+        }
+        streakDays = streak
+
+        let levelFromStreak: (Int) -> PathLevel = { s in
+            if s >= 28 { return .blossom }
+            if s >= 21 { return .steadfast }
+            if s >= 14 { return .growth }
+            if s >= 7 { return .roots }
+            return .seeds
+        }
+        currentLevel = levelFromStreak(streak)
+        let prevMilestone: [PathLevel: Int] = [.seeds: 0, .roots: 7, .growth: 14, .steadfast: 21, .blossom: 28]
+        let nextMilestone: [PathLevel: Int] = [.seeds: 7, .roots: 14, .growth: 21, .steadfast: 28, .blossom: 28]
+        let prev = prevMilestone[currentLevel] ?? 0
+        let next = nextMilestone[currentLevel] ?? 7
+        let range = next - prev
+        levelProgress = range > 0 ? min(1.0, Double(streak - prev) / Double(range)) : 1.0
     }
 
     private func reverseGeocode(_ coord: CLLocationCoordinate2D) {

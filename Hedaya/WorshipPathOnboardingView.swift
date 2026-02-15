@@ -35,6 +35,7 @@ struct WorshipPathOnboardingView: View {
                 }
                 .padding(20)
             }
+            .frame(maxHeight: .infinity)
             bottomBar
         }
         .background(
@@ -161,23 +162,40 @@ struct WorshipPathOnboardingView: View {
     private var bottomBar: some View {
         HStack(spacing: 16) {
             Button("تخطى") {
-                if step < totalSteps - 1 { step += 1 } else { onComplete(profile) }
+                DebugLog.log("Onboarding", "Skip button TAPPED (step=\(self.step))")
+                finishOrAdvance()
             }
             .font(.system(size: 15))
             .foregroundStyle(Color(hex: "2D4A3E").opacity(0.8))
+            .buttonStyle(.plain)
             Spacer()
             Button(step < totalSteps - 1 ? "التالي" : "إنهاء") {
-                if step < totalSteps - 1 { step += 1 } else { onComplete(profile) }
+                DebugLog.log("Onboarding", "Finish/Next button TAPPED (step=\(self.step))")
+                finishOrAdvance()
             }
             .font(.system(size: 16, weight: .semibold))
             .foregroundStyle(.white)
             .padding(.horizontal, 24)
             .padding(.vertical, 12)
             .background(Color(hex: "1B7A4A"), in: RoundedRectangle(cornerRadius: 12))
+            .buttonStyle(.plain)
+            .contentShape(Rectangle())
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 16)
         .background(Color.white.opacity(0.5))
+    }
+
+    private func finishOrAdvance() {
+        DebugLog.log("Onboarding", "finishOrAdvance called: step=\(self.step), totalSteps=\(self.totalSteps), isLastStep=\(self.step >= self.totalSteps - 1)")
+        if step < totalSteps - 1 {
+            step += 1
+            DebugLog.log("Onboarding", "Advanced to step \(self.step)")
+        } else {
+            DebugLog.log("Onboarding", "Calling onComplete with profile (lifeContext=\(String(describing: self.profile.lifeContext?.rawValue)))")
+            onComplete(profile)
+            DebugLog.log("Onboarding", "onComplete returned")
+        }
     }
 
     private func consistencyLabel(_ l: ConsistencyLevel) -> String {
