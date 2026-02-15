@@ -135,6 +135,7 @@ private struct PrayerTreeGraphicContainerView: View {
     @ObservedObject var store: PrayerTrackingStore
     @State private var showDebugOverlay = false
     @State private var showCalculationSettings = false
+    @State private var showMercyDaySheet = false
     @State private var azkarGroupToPresent: AzkarGroup?
 
     private var hasTreeArt: Bool {
@@ -158,9 +159,60 @@ private struct PrayerTreeGraphicContainerView: View {
         return f.string(from: Date())
     }
 
+    /// When motivating or no profile: show full stats (streak number, progress bar). When sometimesHeavy or preferMinimal: minimal (no large streak, no bar).
+    private var useFullStats: Bool {
+        guard let feeling = store.trackingFeeling else { return true }
+        return feeling == .motivating
+    }
+
+    private var todayFocusStrip: some View {
+        let essentials = store.dailyEssentialsForDisplay()
+        return ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                Text("تركيزك اليوم")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Color(hex: "2D4A3E").opacity(0.8))
+                ForEach(essentials) { item in
+                    let done = store.isEssentialSatisfied(item, in: store.todayLog)
+                    Button {
+                        handleEssentialTap(item)
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: done ? "checkmark.circle.fill" : "circle")
+                                .font(.system(size: 12))
+                                .foregroundStyle(done ? Color(hex: "2ECC71") : Color(hex: "1B7A4A").opacity(0.7))
+                            Text(item.titleAr)
+                                .font(.system(size: 13))
+                                .foregroundStyle(Color(hex: "2D4A3E").opacity(done ? 0.7 : 1))
+                                .lineLimit(1)
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(Color.white.opacity(0.7), in: Capsule())
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+        }
+        .background(Color(hex: "F0F7F4").opacity(0.5))
+    }
+
+    private func handleEssentialTap(_ item: PlanEssentialItem) {
+        switch item.actionType {
+        case .dhikrSabah:
+            if let group = azkarGroupForBranch(.morningZikr) { azkarGroupToPresent = group }
+        case .dhikrMasa:
+            if let group = azkarGroupForBranch(.eveningZikr) { azkarGroupToPresent = group }
+        default:
+            break
+        }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
-            // Compact header: date, streak, level
+            // Header: full (motivating) or minimal (sometimesHeavy/preferMinimal)
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(formattedDate)
@@ -170,21 +222,35 @@ private struct PrayerTreeGraphicContainerView: View {
                         Text(levelNameAr(store.currentLevel))
                             .font(.system(size: 15, weight: .semibold))
                             .foregroundStyle(Color(hex: "1B7A4A"))
-                        Text("•")
-                            .foregroundStyle(Color(hex: "2D4A3E").opacity(0.6))
-                        Text("\(store.streakDays) أيام على المسيرة")
-                            .font(.system(size: 13))
-                            .foregroundStyle(Color(hex: "2D4A3E").opacity(0.9))
+                        if useFullStats {
+                            Text("•")
+                                .foregroundStyle(Color(hex: "2D4A3E").opacity(0.6))
+                            Text("\(store.streakDays) أيام على المسيرة")
+                                .font(.system(size: 13))
+                                .foregroundStyle(Color(hex: "2D4A3E").opacity(0.9))
+                        } else {
+                            Text("•")
+                                .foregroundStyle(Color(hex: "2D4A3E").opacity(0.6))
+                            Text("أيام على المسيرة")
+                                .font(.system(size: 13))
+                                .foregroundStyle(Color(hex: "2D4A3E").opacity(0.9))
+                        }
                     }
                 }
                 Spacer()
-                ProgressView(value: store.levelProgress)
-                    .tint(Color(hex: "2ECC71"))
-                    .frame(width: 56)
+                if useFullStats {
+                    ProgressView(value: store.levelProgress)
+                        .tint(Color(hex: "2ECC71"))
+                        .frame(width: 56)
+                }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
             .background(Color.white.opacity(0.6))
+
+            if !store.dailyEssentialsForDisplay().isEmpty {
+                todayFocusStrip
+            }
 
             Group {
                 if hasTreeArt {
@@ -214,6 +280,15 @@ private struct PrayerTreeGraphicContainerView: View {
                         .foregroundStyle(Color(hex: "1B7A4A"))
                 }
             }
+            if store.mercyDaysUsedThisWeek < store.mercyDaysAllowedPerWeek {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("يوم راحة") {
+                        showMercyDaySheet = true
+                    }
+                    .font(.system(size: 14))
+                    .foregroundStyle(Color(hex: "1B7A4A"))
+                }
+            }
             if !hasTreeArt {
                 ToolbarItem(placement: .primaryAction) {
                     Button(showDebugOverlay ? "إخفاء التصحيح" : "عرض التصحيح") {
@@ -226,6 +301,9 @@ private struct PrayerTreeGraphicContainerView: View {
         }
         .sheet(isPresented: $showCalculationSettings) {
             PrayerCalculationSettingsView(store: store)
+        }
+        .sheet(isPresented: $showMercyDaySheet) {
+            MercyDaySheet(store: store, onDismiss: { showMercyDaySheet = false })
         }
         .sheet(item: $azkarGroupToPresent) { group in
             NavigationStack {
@@ -247,6 +325,68 @@ private struct PrayerTreeGraphicContainerView: View {
             azkarGroupToPresent = group
         } else {
             store.markBranchDone(branch)
+        }
+    }
+}
+
+// MARK: - Mercy day sheet — mark a missed day as "يوم راحة"
+private struct MercyDaySheet: View {
+    @ObservedObject var store: PrayerTrackingStore
+    var onDismiss: () -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var selectedDate: Date = {
+        Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date()
+    }()
+
+    var body: some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 24) {
+                Text("استخدام يوم راحة للتاريخ المحدد. سيُحسب اليوم على أنه على المسيرة.")
+                    .font(.system(size: 15))
+                    .foregroundStyle(Color(hex: "2D4A3E").opacity(0.9))
+                    .padding(.horizontal)
+                Text("لديك \(store.mercyDaysUsedThisWeek) من \(store.mercyDaysAllowedPerWeek) أيام راحة هذا الأسبوع.")
+                    .font(.system(size: 14))
+                    .foregroundStyle(Color(hex: "2D4A3E").opacity(0.85))
+                    .padding(.horizontal)
+                DatePicker(
+                    "التاريخ",
+                    selection: $selectedDate,
+                    in: ...Date(),
+                    displayedComponents: .date
+                )
+                .datePickerStyle(.graphical)
+                .environment(\.layoutDirection, .rightToLeft)
+                Spacer()
+                Button {
+                    store.markGraceDay(for: selectedDate)
+                    onDismiss()
+                    dismiss()
+                } label: {
+                    Text("تأكيد يوم الراحة")
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(Color(hex: "1B7A4A"), in: RoundedRectangle(cornerRadius: 14))
+                }
+                .padding(.horizontal, 24)
+                .padding(.bottom, 24)
+            }
+            .padding(.top, 24)
+            .background(LinearGradient(colors: [Color(hex: "F0F7F4"), Color(hex: "E8F5E9")], startPoint: .top, endPoint: .bottom))
+            .navigationTitle("يوم راحة")
+            .navigationBarTitleDisplayMode(.inline)
+            .environment(\.layoutDirection, .rightToLeft)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("إلغاء") {
+                        onDismiss()
+                        dismiss()
+                    }
+                    .foregroundStyle(Color(hex: "1B7A4A"))
+                }
+            }
         }
     }
 }

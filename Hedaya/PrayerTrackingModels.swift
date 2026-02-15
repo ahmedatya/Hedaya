@@ -56,14 +56,16 @@ struct PrayerDayLog: Codable, Equatable {
     var sunriseSunnahDone: Bool
     var quranDone: Bool
     var branchesCompleted: Set<BranchType>
+    var usedGraceDay: Bool
 
-    init(dateKey: String, prayersCompleted: Set<PrayerName> = [], sunnahCompleted: Set<PrayerName> = [], sunriseSunnahDone: Bool = false, quranDone: Bool = false, branchesCompleted: Set<BranchType> = []) {
+    init(dateKey: String, prayersCompleted: Set<PrayerName> = [], sunnahCompleted: Set<PrayerName> = [], sunriseSunnahDone: Bool = false, quranDone: Bool = false, branchesCompleted: Set<BranchType> = [], usedGraceDay: Bool = false) {
         self.dateKey = dateKey
         self.prayersCompleted = prayersCompleted
         self.sunnahCompleted = sunnahCompleted
         self.sunriseSunnahDone = sunriseSunnahDone
         self.quranDone = quranDone
         self.branchesCompleted = branchesCompleted
+        self.usedGraceDay = usedGraceDay
     }
 }
 
@@ -76,6 +78,7 @@ extension PrayerDayLog {
         case sunriseSunnahDone
         case quranDone
         case branchesCompleted
+        case usedGraceDay
     }
 
     init(from decoder: Decoder) throws {
@@ -89,6 +92,7 @@ extension PrayerDayLog {
         quranDone = try c.decode(Bool.self, forKey: .quranDone)
         let branches = (try? c.decode([BranchType].self, forKey: .branchesCompleted)) ?? []
         branchesCompleted = Set(branches)
+        usedGraceDay = (try? c.decode(Bool.self, forKey: .usedGraceDay)) ?? false
     }
 
     func encode(to encoder: Encoder) throws {
@@ -99,6 +103,7 @@ extension PrayerDayLog {
         try c.encode(sunriseSunnahDone, forKey: .sunriseSunnahDone)
         try c.encode(quranDone, forKey: .quranDone)
         try c.encode(Array(branchesCompleted), forKey: .branchesCompleted)
+        try c.encode(usedGraceDay, forKey: .usedGraceDay)
     }
 }
 

@@ -8,6 +8,7 @@ import Adhan
 private enum StorageKey {
     static let dailyLogs = "hedaya.prayerTracking.dailyLogs"
     static let calculationMethod = "hedaya.prayerTracking.calculationMethod"
+    static let profile = "hedaya.worshipPath.profile"
 }
 
 final class PrayerTrackingStore: ObservableObject {
@@ -17,6 +18,9 @@ final class PrayerTrackingStore: ObservableObject {
     @Published private(set) var streakDays: Int = 0
     @Published private(set) var currentLevel: PathLevel = .seeds
     @Published private(set) var levelProgress: Double = 0
+    @Published private(set) var mercyDaysUsedThisWeek: Int = 0
+    @Published private(set) var mercyDaysAllowedPerWeek: Int = 2
+    @Published private(set) var trackingFeeling: TrackingFeeling? = nil
     @Published var coordinate: CLLocationCoordinate2D? {
         didSet {
             computePrayerTimes()
@@ -79,8 +83,73 @@ final class PrayerTrackingStore: ObservableObject {
         return formatter.date(from: dateKey)
     }
 
+    private static func startOfWeekKey(for date: Date) -> String {
+        let cal = Calendar.current
+        guard let start = cal.date(from: cal.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date)) else {
+            return dateKey(for: date)
+        }
+        return dateKey(for: start)
+    }
+
+    private func loadProfile() -> WorshipProfile? {
+        guard let data = defaults.data(forKey: StorageKey.profile) else { return nil }
+        return try? JSONDecoder().decode(WorshipProfile.self, from: data)
+    }
+
+    /// Build daily essentials from profile (mirrors WorshipPathStore.dailyEssentials).
+    private func dailyEssentials(from profile: WorshipProfile) -> [PlanEssentialItem] {
+        let areas = profile.worshipAreas.isEmpty ? WorshipArea.allCases : profile.worshipAreas
+        let pace = profile.pace ?? .balanced
+        var items: [PlanEssentialItem] = []
+        if areas.contains(.salah) {
+            items.append(PlanEssentialItem(titleAr: "صلاة الفجر", actionType: .fajr))
+            items.append(PlanEssentialItem(titleAr: "صلاة الظهر", actionType: .dhuhr))
+            items.append(PlanEssentialItem(titleAr: "صلاة العصر", actionType: .asr))
+            items.append(PlanEssentialItem(titleAr: "صلاة المغرب", actionType: .maghrib))
+            items.append(PlanEssentialItem(titleAr: "صلاة العشاء", actionType: .isha))
+        }
+        if areas.contains(.quran) { items.append(PlanEssentialItem(titleAr: "ورد قرآن قصير", actionType: .quran)) }
+        if areas.contains(.dhikr) {
+            items.append(PlanEssentialItem(titleAr: "أذكار الصباح", actionType: .dhikrSabah))
+            items.append(PlanEssentialItem(titleAr: "أذكار المساء", actionType: .dhikrMasa))
+        }
+        if areas.contains(.dua) && (pace == .balanced || pace == .ambitious) {
+            items.append(PlanEssentialItem(titleAr: "دعاء بعد الصلاة", actionType: .dua))
+        }
+        if pace == .gentle {
+            return Array(items.prefix(6))
+        }
+        return items
+    }
+
+    /// Maps LoggedActionType to PrayerDayLog; returns true if any essential is satisfied.
+    private func dayLogSatisfiesAnyEssential(_ log: PrayerDayLog, essentials: [PlanEssentialItem]) -> Bool {
+        for item in essentials {
+            switch item.actionType {
+            case .fajr: if log.prayersCompleted.contains(.fajr) { return true }
+            case .dhuhr: if log.prayersCompleted.contains(.dhuhr) { return true }
+            case .asr: if log.prayersCompleted.contains(.asr) { return true }
+            case .maghrib: if log.prayersCompleted.contains(.maghrib) { return true }
+            case .isha: if log.prayersCompleted.contains(.isha) { return true }
+            case .quran: if log.quranDone { return true }
+            case .dhikrSabah: if log.branchesCompleted.contains(.morningZikr) { return true }
+            case .dhikrMasa: if log.branchesCompleted.contains(.eveningZikr) { return true }
+            case .dua: if log.branchesCompleted.contains(.extraDuaa) { return true }
+            default: break
+            }
+        }
+        return false
+    }
+
     private func isOnPath(dateKey: String) -> Bool {
         guard let log = dailyLogs[dateKey] else { return false }
+        if log.usedGraceDay { return true }
+        if let profile = loadProfile() {
+            let essentials = dailyEssentials(from: profile)
+            if !essentials.isEmpty {
+                return dayLogSatisfiesAnyEssential(log, essentials: essentials)
+            }
+        }
         return !log.prayersCompleted.isEmpty
             || !log.sunnahCompleted.isEmpty
             || log.sunriseSunnahDone
@@ -90,7 +159,22 @@ final class PrayerTrackingStore: ObservableObject {
 
     private func refreshProgress() {
         let todayKey = Self.dateKey(for: Date())
+        let weekStart = Self.startOfWeekKey(for: Date())
         let cal = Calendar.current
+
+        if let profile = loadProfile() {
+            mercyDaysAllowedPerWeek = profile.pace == .ambitious ? 1 : 2
+            trackingFeeling = profile.trackingFeeling
+        } else {
+            trackingFeeling = nil
+        }
+        var mercyUsed = 0
+        for (key, log) in dailyLogs where log.usedGraceDay {
+            let logWeekStart = Self.startOfWeekKey(for: Self.dateFrom(key) ?? Date())
+            if logWeekStart == weekStart { mercyUsed += 1 }
+        }
+        mercyDaysUsedThisWeek = mercyUsed
+
         var streak = 0
         var check = Date()
         for _ in 0..<365 {
@@ -216,6 +300,39 @@ final class PrayerTrackingStore: ObservableObject {
         log.branchesCompleted.insert(branch)
         todayLog = log
         dailyLogs[log.dateKey] = log
+        saveDailyLogs()
+    }
+
+    /// Returns daily essentials from the loaded profile for display (e.g. "Today's focus" strip).
+    func dailyEssentialsForDisplay() -> [PlanEssentialItem] {
+        guard let profile = loadProfile() else { return [] }
+        return dailyEssentials(from: profile)
+    }
+
+    /// Returns true if the given essential is satisfied by the log.
+    func isEssentialSatisfied(_ item: PlanEssentialItem, in log: PrayerDayLog) -> Bool {
+        switch item.actionType {
+        case .fajr: return log.prayersCompleted.contains(.fajr)
+        case .dhuhr: return log.prayersCompleted.contains(.dhuhr)
+        case .asr: return log.prayersCompleted.contains(.asr)
+        case .maghrib: return log.prayersCompleted.contains(.maghrib)
+        case .isha: return log.prayersCompleted.contains(.isha)
+        case .quran: return log.quranDone
+        case .dhikrSabah: return log.branchesCompleted.contains(.morningZikr)
+        case .dhikrMasa: return log.branchesCompleted.contains(.eveningZikr)
+        case .dua: return log.branchesCompleted.contains(.extraDuaa)
+        default: return false
+        }
+    }
+
+    func markGraceDay(for date: Date = Date()) {
+        let key = Self.dateKey(for: date)
+        var log = dailyLogs[key] ?? PrayerDayLog(dateKey: key)
+        log.usedGraceDay = true
+        dailyLogs[key] = log
+        if key == Self.dateKey(for: Date()) {
+            todayLog = log
+        }
         saveDailyLogs()
     }
 }

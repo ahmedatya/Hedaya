@@ -21,9 +21,9 @@ struct MyWorshipPathView: View {
                 WorshipPathIntroView(onStart: { screen = .onboarding }, onSkip: { dismiss() })
             case .onboarding:
                 WorshipPathOnboardingView(store: store, onComplete: { profile in
-                    DebugLog.log("WorshipPath", "Onboarding onComplete, switching to .tree")
+                    DebugLog.log("WorshipPath", "Onboarding onComplete, switching to .plan")
                     store.completeOnboarding(with: profile)
-                    screen = .tree
+                    screen = .plan
                 })
             case .plan:
                 WorshipPathPlanView(store: store, onContinue: { screen = .tree })
