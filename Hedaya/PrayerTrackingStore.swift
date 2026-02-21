@@ -56,9 +56,15 @@ final class PrayerTrackingStore: ObservableObject {
         refreshProgress()
     }
 
+    /// Gregorian calendar for date keys so storage is consistent regardless of device calendar (e.g. Hijri).
+    private static var gregorian: Calendar {
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone.current
+        return cal
+    }
+
     static func dateKey(for date: Date = Date()) -> String {
-        let cal = Calendar.current
-        let c = cal.dateComponents([.year, .month, .day], from: date)
+        let c = gregorian.dateComponents([.year, .month, .day], from: date)
         return String(format: "%04d-%02d-%02d", c.year ?? 0, c.month ?? 0, c.day ?? 0)
     }
 
@@ -78,14 +84,14 @@ final class PrayerTrackingStore: ObservableObject {
 
     private static func dateFrom(_ dateKey: String) -> Date? {
         let formatter = DateFormatter()
+        formatter.calendar = gregorian
         formatter.dateFormat = "yyyy-MM-dd"
         formatter.timeZone = TimeZone.current
         return formatter.date(from: dateKey)
     }
 
     private static func startOfWeekKey(for date: Date) -> String {
-        let cal = Calendar.current
-        guard let start = cal.date(from: cal.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date)) else {
+        guard let start = gregorian.date(from: gregorian.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date)) else {
             return dateKey(for: date)
         }
         return dateKey(for: start)
@@ -133,7 +139,6 @@ final class PrayerTrackingStore: ObservableObject {
 
     private func refreshProgress() {
         let weekStart = Self.startOfWeekKey(for: Date())
-        let cal = Calendar.current
 
         if let profile = loadProfile() {
             mercyDaysAllowedPerWeek = profile.pace == .ambitious ? 1 : 2
@@ -157,7 +162,7 @@ final class PrayerTrackingStore: ObservableObject {
             } else {
                 break
             }
-            check = cal.date(byAdding: .day, value: -1, to: check) ?? check
+            check = Self.gregorian.date(byAdding: .day, value: -1, to: check) ?? check
         }
         streakDays = streak
 
@@ -193,8 +198,7 @@ final class PrayerTrackingStore: ObservableObject {
             prayerTimes = nil
             return
         }
-        let cal = Calendar.current
-        let dateComponents = cal.dateComponents([.year, .month, .day], from: Date())
+        let dateComponents = Self.gregorian.dateComponents([.year, .month, .day], from: Date())
         let params: CalculationParameters = {
             switch calculationMethod {
             case .muslimWorldLeague: return CalculationMethod.muslimWorldLeague.params

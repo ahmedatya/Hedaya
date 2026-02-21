@@ -150,9 +150,9 @@ final class PrayerTreeScene: SKScene {
                 let w = SceneLayout.branchNodeSize * 0.9
                 let path = CGMutablePath()
                 path.move(to: CGPoint(x: 0, y: -w/2))
-                path.addLine(to: CGPoint(x: w/2, y: w/2))
+                path.addLine(to: CGPoint(x: w/2, y: 0))
                 path.addLine(to: CGPoint(x: 0, y: w/2))
-                path.addLine(to: CGPoint(x: -w/2, y: w/2))
+                path.addLine(to: CGPoint(x: -w/2, y: 0))
                 path.closeSubpath()
                 node = SKShapeNode(path: path)
             default:

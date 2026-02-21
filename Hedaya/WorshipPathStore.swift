@@ -24,22 +24,28 @@ final class WorshipPathStore: ObservableObject {
         self.refreshProgressFromLogs()
     }
 
+    /// Gregorian calendar for date keys so storage is consistent regardless of device calendar (e.g. Hijri).
+    private static var gregorian: Calendar {
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone.current
+        return cal
+    }
+
     static func dateKey(for date: Date = Date()) -> String {
-        let cal = Calendar.current
-        let c = cal.dateComponents([.year, .month, .day], from: date)
+        let c = gregorian.dateComponents([.year, .month, .day], from: date)
         return String(format: "%04d-%02d-%02d", c.year ?? 0, c.month ?? 0, c.day ?? 0)
     }
 
     private static func dateFrom(_ dateKey: String) -> Date? {
         let formatter = DateFormatter()
+        formatter.calendar = gregorian
         formatter.dateFormat = "yyyy-MM-dd"
         formatter.timeZone = TimeZone.current
         return formatter.date(from: dateKey)
     }
 
     private static func startOfWeekKey(for date: Date) -> String {
-        let cal = Calendar.current
-        guard let start = cal.date(from: cal.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date)) else {
+        guard let start = gregorian.date(from: gregorian.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date)) else {
             return dateKey(for: date)
         }
         return dateKey(for: start)
@@ -139,7 +145,6 @@ final class WorshipPathStore: ObservableObject {
         progress.mercyDaysUsedThisWeek = mercyUsed
 
         var streak = 0
-        let cal = Calendar.current
         var check = Date()
         for _ in 0..<365 {
             let key = Self.dateKey(for: check)
@@ -148,7 +153,7 @@ final class WorshipPathStore: ObservableObject {
             } else {
                 break
             }
-            check = cal.date(byAdding: .day, value: -1, to: check) ?? check
+            check = Self.gregorian.date(byAdding: .day, value: -1, to: check) ?? check
         }
         progress.streakDays = streak
 
