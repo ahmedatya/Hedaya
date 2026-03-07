@@ -122,36 +122,36 @@ struct GeneralSebhaView: View {
                     }
                 }
 
-                // Progress ring when goal is set
-                if effectiveMaxGoal != nil {
-                    ZStack {
+                // Tap button — progress ring wraps it when goal is set
+                ZStack {
+                    if effectiveMaxGoal != nil {
+                        // Ring track
                         Circle()
-                            .stroke(Color.gray.opacity(0.15), lineWidth: 6)
-                            .frame(width: 130, height: 130)
+                            .stroke(Color.gray.opacity(0.15), lineWidth: 10)
+                            .frame(width: 220, height: 220)
+                        // Progress arc
                         Circle()
                             .trim(from: 0, to: progress)
                             .stroke(
                                 LinearGradient(colors: sebhaColors, startPoint: .topLeading, endPoint: .bottomTrailing),
-                                style: StrokeStyle(lineWidth: 6, lineCap: .round)
+                                style: StrokeStyle(lineWidth: 10, lineCap: .round)
                             )
-                            .frame(width: 130, height: 130)
+                            .frame(width: 220, height: 220)
                             .rotationEffect(.degrees(-90))
                             .animation(.easeInOut(duration: 0.3), value: progress)
                     }
-                    .padding(.top, 16)
-                }
 
-                // Tap button
-                ZStack {
+                    // Pulse glow
                     Circle()
-                        .fill(sebhaColors[0].opacity(0.15))
-                        .frame(width: showPulse ? 110 : 90, height: showPulse ? 110 : 90)
+                        .fill(sebhaColors[0].opacity(0.12))
+                        .frame(width: showPulse ? 185 : 165, height: showPulse ? 185 : 165)
                         .animation(.easeOut(duration: 0.25), value: showPulse)
 
+                    // Tap circle
                     Circle()
                         .fill(.white)
-                        .frame(width: 90, height: 90)
-                        .shadow(color: sebhaColors[0].opacity(0.35), radius: 10, x: 0, y: 4)
+                        .frame(width: 165, height: 165)
+                        .shadow(color: sebhaColors[0].opacity(0.3), radius: 12, x: 0, y: 5)
                         .overlay(
                             Circle()
                                 .stroke(
@@ -161,16 +161,16 @@ struct GeneralSebhaView: View {
                         )
                         .overlay(
                             Image(systemName: "hand.tap.fill")
-                                .font(.system(size: 32))
+                                .font(.system(size: 52))
                                 .foregroundStyle(LinearGradient(colors: sebhaColors, startPoint: .topLeading, endPoint: .bottomTrailing))
                         )
-                        .scaleEffect(showPulse ? 0.92 : 1.0)
+                        .scaleEffect(showPulse ? 0.93 : 1.0)
                         .animation(.easeOut(duration: 0.15), value: showPulse)
                 }
                 .onTapGesture {
                     incrementCount()
                 }
-                .padding(.top, 28)
+                .padding(.top, 24)
 
                 // Reset button
                 Button(action: resetCounter) {

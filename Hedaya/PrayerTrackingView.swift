@@ -32,6 +32,7 @@ import SVGView
 struct PrayerTrackingView: View {
     @StateObject private var locationManager = PrayerLocationManager()
     @EnvironmentObject private var store: PrayerTrackingStore
+    @Environment(\.colorScheme) private var colorScheme
 
     /// Converts coordinate to an Equatable key so we can use it with onChange(of:).
     private func coordinateKey(_ coord: CLLocationCoordinate2D?) -> String? {
@@ -51,7 +52,9 @@ struct PrayerTrackingView: View {
         }
         .background(
             LinearGradient(
-                colors: [Color(hex: "F0F7F4"), Color(hex: "E8F5E9"), Color(hex: "F5F5F5")],
+                colors: colorScheme == .dark
+                    ? [Color(hex: "0D1A14"), Color(hex: "0A1510"), Color(hex: "0F1410")]
+                    : [Color(hex: "F0F7F4"), Color(hex: "E8F5E9"), Color(hex: "F5F5F5")],
                 startPoint: .top,
                 endPoint: .bottom
             )
@@ -77,7 +80,7 @@ struct PrayerTrackingView: View {
                 .scaleEffect(1.2)
             Text("جاري تحديد موقعك لأوقات الصلاة")
                 .font(.system(size: 17, weight: .medium))
-                .foregroundStyle(Color(hex: "2D4A3E"))
+                .foregroundStyle(Color.primary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
         }
@@ -88,10 +91,10 @@ struct PrayerTrackingView: View {
         VStack(spacing: 20) {
             Image(systemName: "location.slash")
                 .font(.system(size: 48))
-                .foregroundStyle(Color(hex: "1B7A4A").opacity(0.7))
+                .foregroundStyle(Color(hex: "2ECC71").opacity(0.8))
             Text("السماح بالموقع لمعرفة أوقات الصلاة")
                 .font(.system(size: 17, weight: .medium))
-                .foregroundStyle(Color(hex: "2D4A3E"))
+                .foregroundStyle(Color.primary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
             Button("فتح الإعدادات") {
@@ -100,7 +103,7 @@ struct PrayerTrackingView: View {
                 }
             }
             .font(.system(size: 16, weight: .semibold))
-            .foregroundStyle(Color(hex: "1B7A4A"))
+            .foregroundStyle(Color(hex: "2ECC71"))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -129,7 +132,6 @@ private struct PrayerTreeGraphicContainerView: View {
     @ObservedObject var store: PrayerTrackingStore
     @State private var showDebugOverlay = false
     @State private var showCalculationSettings = false
-    @State private var showMercyDaySheet = false
     @State private var azkarGroupToPresent: AzkarGroup?
     @State private var showQuranReader = false
 
@@ -143,7 +145,7 @@ private struct PrayerTreeGraphicContainerView: View {
         case .roots: return "الجذور"
         case .growth: return "النمو"
         case .steadfast: return "الثبات"
-        case .blossom: return "الإيناع"
+        case .blossom: return "الإزهار"
         }
     }
 
@@ -166,7 +168,7 @@ private struct PrayerTreeGraphicContainerView: View {
             HStack(spacing: 8) {
                 Text("تركيزك اليوم")
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(Color(hex: "2D4A3E").opacity(0.8))
+                    .foregroundStyle(Color.secondary)
                 ForEach(essentials) { item in
                     let done = store.isEssentialSatisfied(item, in: store.todayLog)
                     Button {
@@ -175,15 +177,15 @@ private struct PrayerTreeGraphicContainerView: View {
                         HStack(spacing: 4) {
                             Image(systemName: done ? "checkmark.circle.fill" : "circle")
                                 .font(.system(size: 12))
-                                .foregroundStyle(done ? Color(hex: "2ECC71") : Color(hex: "1B7A4A").opacity(0.7))
+                                .foregroundStyle(done ? Color(hex: "2ECC71") : Color.secondary)
                             Text(item.titleAr)
                                 .font(.system(size: 13))
-                                .foregroundStyle(Color(hex: "2D4A3E").opacity(done ? 0.7 : 1))
+                                .foregroundStyle(done ? Color.secondary : Color.primary)
                                 .lineLimit(1)
                         }
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
-                        .background(Color.white.opacity(0.7), in: Capsule())
+                        .background(Color(.secondarySystemBackground), in: Capsule())
                     }
                     .buttonStyle(.plain)
                 }
@@ -191,7 +193,7 @@ private struct PrayerTreeGraphicContainerView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
         }
-        .background(Color(hex: "F0F7F4").opacity(0.5))
+        .background(Color(.systemBackground).opacity(0.5))
     }
 
     private func handleEssentialTap(_ item: PlanEssentialItem) {
@@ -214,23 +216,23 @@ private struct PrayerTreeGraphicContainerView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(formattedDate)
                         .font(.system(size: 13))
-                        .foregroundStyle(Color(hex: "2D4A3E").opacity(0.9))
+                        .foregroundStyle(Color.secondary)
                     HStack(spacing: 6) {
                         Text(levelNameAr(store.currentLevel))
                             .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(Color(hex: "1B7A4A"))
+                            .foregroundStyle(Color(hex: "2ECC71"))
                         if useFullStats {
                             Text("•")
-                                .foregroundStyle(Color(hex: "2D4A3E").opacity(0.6))
+                                .foregroundStyle(Color.secondary)
                             Text("\(store.streakDays) أيام على المسيرة")
                                 .font(.system(size: 13))
-                                .foregroundStyle(Color(hex: "2D4A3E").opacity(0.9))
+                                .foregroundStyle(Color.primary)
                         } else {
                             Text("•")
-                                .foregroundStyle(Color(hex: "2D4A3E").opacity(0.6))
+                                .foregroundStyle(Color.secondary)
                             Text("أيام على المسيرة")
                                 .font(.system(size: 13))
-                                .foregroundStyle(Color(hex: "2D4A3E").opacity(0.9))
+                                .foregroundStyle(Color.primary)
                         }
                     }
                 }
@@ -243,7 +245,7 @@ private struct PrayerTreeGraphicContainerView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
-            .background(Color.white.opacity(0.6))
+            .background(Color(.systemBackground).opacity(0.7))
 
             if !store.dailyEssentialsForDisplay().isEmpty {
                 todayFocusStrip
@@ -274,24 +276,12 @@ private struct PrayerTreeGraphicContainerView: View {
                     showCalculationSettings = true
                 } label: {
                     Image(systemName: "gearshape.fill")
-                        .foregroundStyle(Color(hex: "1B7A4A"))
-                }
-            }
-            if store.mercyDaysUsedThisWeek < store.mercyDaysAllowedPerWeek {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("يوم راحة") {
-                        showMercyDaySheet = true
-                    }
-                    .font(.system(size: 14))
-                    .foregroundStyle(Color(hex: "1B7A4A"))
+                        .foregroundStyle(Color(hex: "2ECC71"))
                 }
             }
         }
         .sheet(isPresented: $showCalculationSettings) {
             PrayerCalculationSettingsView(store: store)
-        }
-        .sheet(isPresented: $showMercyDaySheet) {
-            MercyDaySheet(store: store, onDismiss: { showMercyDaySheet = false })
         }
         .sheet(item: $azkarGroupToPresent) { group in
             NavigationStack {
@@ -299,7 +289,7 @@ private struct PrayerTreeGraphicContainerView: View {
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
                             Button("إغلاق") { azkarGroupToPresent = nil }
-                                .foregroundStyle(Color(hex: "1B7A4A"))
+                                .foregroundStyle(Color(hex: "2ECC71"))
                         }
                     }
             }
@@ -321,68 +311,6 @@ private struct PrayerTreeGraphicContainerView: View {
     }
 }
 
-// MARK: - Mercy day sheet — mark a missed day as "يوم راحة"
-private struct MercyDaySheet: View {
-    @ObservedObject var store: PrayerTrackingStore
-    var onDismiss: () -> Void
-    @Environment(\.dismiss) private var dismiss
-    @State private var selectedDate: Date = {
-        Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date()
-    }()
-
-    var body: some View {
-        NavigationStack {
-            VStack(alignment: .leading, spacing: 24) {
-                Text("استخدام يوم راحة للتاريخ المحدد. سيُحسب اليوم على أنه على المسيرة.")
-                    .font(.system(size: 15))
-                    .foregroundStyle(Color(hex: "2D4A3E").opacity(0.9))
-                    .padding(.horizontal)
-                Text("لديك \(store.mercyDaysUsedThisWeek) من \(store.mercyDaysAllowedPerWeek) أيام راحة هذا الأسبوع.")
-                    .font(.system(size: 14))
-                    .foregroundStyle(Color(hex: "2D4A3E").opacity(0.85))
-                    .padding(.horizontal)
-                DatePicker(
-                    "التاريخ",
-                    selection: $selectedDate,
-                    in: ...Date(),
-                    displayedComponents: .date
-                )
-                .datePickerStyle(.graphical)
-                .environment(\.layoutDirection, .rightToLeft)
-                Spacer()
-                Button {
-                    store.markGraceDay(for: selectedDate)
-                    onDismiss()
-                    dismiss()
-                } label: {
-                    Text("تأكيد يوم الراحة")
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(Color(hex: "1B7A4A"), in: RoundedRectangle(cornerRadius: 14))
-                }
-                .padding(.horizontal, 24)
-                .padding(.bottom, 24)
-            }
-            .padding(.top, 24)
-            .background(LinearGradient(colors: [Color(hex: "F0F7F4"), Color(hex: "E8F5E9")], startPoint: .top, endPoint: .bottom))
-            .navigationTitle("يوم راحة")
-            .navigationBarTitleDisplayMode(.inline)
-            .environment(\.layoutDirection, .rightToLeft)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("إلغاء") {
-                        onDismiss()
-                        dismiss()
-                    }
-                    .foregroundStyle(Color(hex: "1B7A4A"))
-                }
-            }
-        }
-    }
-}
-
 // MARK: - Calculation method settings sheet
 private struct PrayerCalculationSettingsView: View {
     @ObservedObject var store: PrayerTrackingStore
@@ -395,7 +323,7 @@ private struct PrayerCalculationSettingsView: View {
                 Section {
                     Toggle(isOn: $playAzanSound) {
                         Text("تشغيل صوت الأذان")
-                            .foregroundStyle(Color(hex: "2D4A3E"))
+                            .foregroundStyle(Color.primary)
                     }
                     .onChange(of: playAzanSound) { newValue in
                         UserDefaults.standard.set(newValue, forKey: AzanNotificationManager.playAzanSoundKey)
@@ -415,7 +343,7 @@ private struct PrayerCalculationSettingsView: View {
                         } label: {
                             HStack {
                                 Text(method.titleAr)
-                                    .foregroundStyle(Color(hex: "2D4A3E"))
+                                    .foregroundStyle(Color.primary)
                                 Spacer()
                                 if store.calculationMethod == method {
                                     Image(systemName: "checkmark.circle.fill")
@@ -438,7 +366,7 @@ private struct PrayerCalculationSettingsView: View {
                     Button("تم") {
                         dismiss()
                     }
-                    .foregroundStyle(Color(hex: "1B7A4A"))
+                    .foregroundStyle(Color(hex: "2ECC71"))
                 }
             }
         }
@@ -465,7 +393,7 @@ private struct PrayerTreeGraphicView: View {
         let h = size.height
         switch branch {
         case .morningZikr: return layout.branchLeafCenter(at: 2)
-        case .sleepingZikr: return CGPoint(x: w * 0.78, y: h * 0.58)
+        case .sleepingZikr: return CGPoint(x: w * 0.86, y: h * 0.58)
         case .eveningZikr: return layout.branchLeafCenter(at: 4)
         case .extraDuaa: return layout.branchLeafCenter(at: 5)
         case .extraSalah: return layout.branchLeafCenter(at: 7)
@@ -490,7 +418,8 @@ private struct PrayerTreeGraphicView: View {
                         ZStack(alignment: .topLeading) {
                             // Islamic date + current time — top-right above prayer trackers
                             IslamicDateTimeView(locationDescription: store.locationDescription)
-                                .position(x: geo.size.width - 180, y: geo.size.height - 120)
+                                .frame(width: geo.size.width * 0.6)
+                                .position(x: geo.size.width / 2, y: geo.size.height - 120)
 
                             // Quran tracker near trunk
                             let trunkRect = layout.trunkRect
@@ -499,14 +428,15 @@ private struct PrayerTreeGraphicView: View {
                             } label: {
                                 Text(store.todayLog.quranDone ? "✓ ورد القرآن" : "ورد القرآن")
                                     .font(.system(size: 11, weight: .semibold))
-                                    .foregroundStyle(store.todayLog.quranDone ? .white : Color(hex: "2D4A3E"))
+                                    .foregroundStyle(store.todayLog.quranDone ? Color(hex: "2ECC71") : Color.primary)
                                     .multilineTextAlignment(.center)
                                     .lineLimit(2)
                                     .padding(.horizontal, 10)
                                     .padding(.vertical, 6)
-                                    .background(
+                                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+                                    .overlay(
                                         RoundedRectangle(cornerRadius: 8)
-                                            .fill(store.todayLog.quranDone ? Color(hex: "3D4E2A") : Color(hex: "E8EDE0").opacity(0.95))
+                                            .stroke(store.todayLog.quranDone ? Color(hex: "2ECC71").opacity(0.7) : Color.white.opacity(0.25), lineWidth: 1)
                                     )
                             }
                             .buttonStyle(.plain)
@@ -517,14 +447,32 @@ private struct PrayerTreeGraphicView: View {
                             ForEach(Array(branchTypes.enumerated()), id: \.element) { _, branch in
                                 let pt = PrayerTreeGraphicView.branchPositionForSVG(branch, layout: layout, size: geo.size)
                                 let done = store.todayLog.branchesCompleted.contains(branch)
-                                Button {
-                                    if !done { onBranchTap(branch) }
-                                } label: {
-                                    BranchTrackerPill(title: branch.titleAr, isDone: done)
+                                let isLeft = pt.x < geo.size.width / 2
+                                HStack(spacing: 0) {
+                                    if isLeft {
+                                        Button {
+                                            if !done { onBranchTap(branch) }
+                                        } label: {
+                                            BranchTrackerPill(title: branch.titleAr, isDone: done)
+                                        }
+                                        .buttonStyle(.plain)
+                                        .disabled(done)
+                                        .padding(.leading, 6)
+                                        Spacer()
+                                    } else {
+                                        Spacer()
+                                        Button {
+                                            if !done { onBranchTap(branch) }
+                                        } label: {
+                                            BranchTrackerPill(title: branch.titleAr, isDone: done)
+                                        }
+                                        .buttonStyle(.plain)
+                                        .disabled(done)
+                                        .padding(.trailing, 6)
+                                    }
                                 }
-                                .buttonStyle(.plain)
-                                .disabled(done)
-                                .position(x: pt.x, y: pt.y)
+                                .frame(width: geo.size.width)
+                                .position(x: geo.size.width / 2, y: pt.y)
                             }
 
                             // Prayer trackers + sunrise (6 items: Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha)
@@ -677,7 +625,7 @@ private struct PrayerTreeGraphicView: View {
             } label: {
                 Text(store.todayLog.quranDone ? "✓ ورد القرآن" : "ورد القرآن اليوم")
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(store.todayLog.quranDone ? .white : Color(hex: "2D4A3E"))
+                    .foregroundStyle(store.todayLog.quranDone ? Color(hex: "2ECC71") : Color.primary)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
                     .shadow(color: .white.opacity(0.8), radius: 1, x: 0, y: 0)
@@ -771,20 +719,20 @@ private struct IslamicDateTimeView: View {
             VStack(spacing: 2) {
                 Text(formatPrayerTime(context.date))
                     .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(Color(hex: "2D4A3E"))
+                    .foregroundStyle(Color.primary)
                 Text(formatIslamicDate(context.date))
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(Color(hex: "2D4A3E").opacity(0.85))
+                    .foregroundStyle(Color.secondary)
                     .multilineTextAlignment(.center)
                 if let loc = locationDescription {
                     Text("📍 \(loc)")
                         .font(.system(size: 10, weight: .regular))
-                        .foregroundStyle(Color(hex: "2D4A3E").opacity(0.6))
+                        .foregroundStyle(Color.secondary)
                         .multilineTextAlignment(.center)
                         .lineLimit(2)
                 }
             }
-            .frame(alignment: .center)
+            .frame(maxWidth: .infinity, alignment: .center)
         }
     }
 }
@@ -821,11 +769,11 @@ private struct SunriseTrackerView: View {
                     .frame(width: 44, height: 44)
                 Text("الشروق")
                     .font(.system(size: 10, weight: .medium))
-                    .foregroundStyle(Color(hex: "2D4A3E"))
+                    .foregroundStyle(Color.primary)
                     .lineLimit(1)
                 Text(timeText)
                     .font(.system(size: 9, weight: .regular))
-                    .foregroundStyle(Color(hex: "2D4A3E").opacity(0.85))
+                    .foregroundStyle(Color.secondary)
             }
             .frame(maxWidth: .infinity)
 
@@ -850,13 +798,14 @@ private struct BranchTrackerPill: View {
     var body: some View {
         Text(isDone ? "✓ \(title)" : title)
             .font(.system(size: 10, weight: .semibold))
-            .foregroundStyle(.white)
+            .foregroundStyle(isDone ? Color(hex: "2ECC71") : Color.primary)
             .lineLimit(1)
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
-            .background(
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+            .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(isDone ? Color(hex: "2ECC71") : Color(hex: "3D4E2A"))
+                    .stroke(isDone ? Color(hex: "2ECC71").opacity(0.8) : Color.primary.opacity(0.2), lineWidth: 1)
             )
     }
 }
@@ -921,12 +870,12 @@ private struct RootNodeOverlayView: View {
                 }
                 Text(prayer.titleAr)
                     .font(.system(size: 10, weight: .medium))
-                    .foregroundStyle(Color(hex: "2D4A3E"))
+                    .foregroundStyle(Color.primary)
                     .lineLimit(1)
                 if let t = timeText {
                     Text(t)
                         .font(.system(size: 9, weight: .regular))
-                        .foregroundStyle(Color(hex: "2D4A3E").opacity(0.85))
+                        .foregroundStyle(Color.secondary)
                 }
             }
             .frame(maxWidth: .infinity)
@@ -1048,8 +997,8 @@ private struct TreeLayout {
     private func branchLeafCenterSVG(at index: Int) -> CGPoint {
         let w = size.width
         let h = size.height
-        let leftX = w * 0.22   // Left column - consistent for all 6
-        let rightX = w * 0.78  // Right column - over tree branches
+        let leftX = w * 0.14   // Left column - near screen edge, outside tree canopy
+        let rightX = w * 0.86  // Right column - near screen edge, outside tree canopy
         switch index {
         case 6: return CGPoint(x: leftX, y: h * 0.14)   // ذكر إضافي — top left
         case 0: return CGPoint(x: leftX, y: h * 0.22)   // صلاة سنة
@@ -1273,13 +1222,13 @@ private struct RootNodeView: View {
                         }
                         Text(prayer.titleAr)
                             .font(.system(size: 9, weight: .semibold))
-                            .foregroundStyle(isGlowing ? oliveBorder : Color(hex: "2D4A3E"))
+                            .foregroundStyle(isGlowing ? oliveBorder : Color.secondary)
                             .lineLimit(1)
                     }
                 }
                 Text(prayer.titleAr)
                     .font(.system(size: 9, weight: .medium))
-                    .foregroundStyle(Color(hex: "2D4A3E"))
+                    .foregroundStyle(Color.secondary)
                     .lineLimit(1)
             }
         }
