@@ -33,6 +33,12 @@
 		A10000010000000000000020 /* Adhan in Frameworks */ = {isa = PBXBuildFile; productRef = A10000A20000000000000001 /* Adhan */; };
 		A10000010000000000000026 /* SVGView in Frameworks */ = {isa = PBXBuildFile; productRef = A10000A40000000000000001 /* SVGView */; };
 		A10000010000000000000027 /* DebugLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000027 /* DebugLog.swift */; };
+		A10000010000000000000028 /* azan.wav in Resources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000028 /* azan.wav */; };
+		A10000010000000000000029 /* AzanNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000029 /* AzanNotificationManager.swift */; };
+		A10000010000000000000030 /* QuranModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000030 /* QuranModels.swift */; };
+		A10000010000000000000031 /* QuranDataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000031 /* QuranDataLoader.swift */; };
+		A10000010000000000000032 /* QuranView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000032 /* QuranView.swift */; };
+		A10000010000000000000033 /* AmiriQuran.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A10000020000000000000033 /* AmiriQuran.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -60,6 +66,12 @@
 		A10000020000000000000022 /* PrayerTreeScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTreeScene.swift; sourceTree = "<group>"; };
 		A10000020000000000000023 /* TreeArt.svg */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = TreeArt.svg; sourceTree = "<group>"; };
 		A10000020000000000000027 /* DebugLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLog.swift; sourceTree = "<group>"; };
+		A10000020000000000000028 /* azan.wav */ = {isa = PBXFileReference; lastKnownFileType = file; path = azan.wav; sourceTree = "<group>"; };
+		A10000020000000000000029 /* AzanNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AzanNotificationManager.swift; sourceTree = "<group>"; };
+		A10000020000000000000030 /* QuranModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranModels.swift; sourceTree = "<group>"; };
+		A10000020000000000000031 /* QuranDataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranDataLoader.swift; sourceTree = "<group>"; };
+		A10000020000000000000032 /* QuranView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranView.swift; sourceTree = "<group>"; };
+		A10000020000000000000033 /* AmiriQuran.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = AmiriQuran.ttf; sourceTree = "<group>"; };
 		A10000030000000000000001 /* Hedaya.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hedaya.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -104,11 +116,17 @@
 				A10000020000000000000016 /* PrayerTrackingModels.swift */,
 				A10000020000000000000017 /* PrayerLocationManager.swift */,
 				A10000020000000000000018 /* PrayerTrackingStore.swift */,
+				A10000020000000000000029 /* AzanNotificationManager.swift */,
+				A10000020000000000000030 /* QuranModels.swift */,
+				A10000020000000000000031 /* QuranDataLoader.swift */,
+				A10000020000000000000032 /* QuranView.swift */,
+				A10000020000000000000033 /* AmiriQuran.ttf */,
 				A10000020000000000000019 /* PrayerTrackingView.swift */,
 				A10000020000000000000020 /* PrayerTreeMapping.swift */,
 				A10000020000000000000021 /* PrayerTree.svg */,
 				A10000020000000000000022 /* PrayerTreeScene.swift */,
 				A10000020000000000000023 /* TreeArt.svg */,
+				A10000020000000000000028 /* azan.wav */,
 				A10000020000000000000009 /* Data */,
 				A10000020000000000000003 /* Assets.xcassets */,
 			);
@@ -193,6 +211,8 @@
 				A10000010000000000000009 /* Data in Resources */,
 				A10000010000000000000022 /* PrayerTree.svg in Resources */,
 				A10000010000000000000025 /* TreeArt.svg in Resources */,
+				A10000010000000000000028 /* azan.wav in Resources */,
+				A10000010000000000000033 /* AmiriQuran.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -223,6 +243,10 @@
 				A10000010000000000000019 /* PrayerTrackingView.swift in Sources */,
 				A10000010000000000000021 /* PrayerTreeMapping.swift in Sources */,
 				A10000010000000000000024 /* PrayerTreeScene.swift in Sources */,
+				A10000010000000000000029 /* AzanNotificationManager.swift in Sources */,
+				A10000010000000000000030 /* QuranModels.swift in Sources */,
+				A10000010000000000000031 /* QuranDataLoader.swift in Sources */,
+				A10000010000000000000032 /* QuranView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

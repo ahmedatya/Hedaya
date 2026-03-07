@@ -9,6 +9,7 @@ private enum StorageKey {
     static let dailyLogs = "hedaya.prayerTracking.dailyLogs"
     static let calculationMethod = "hedaya.prayerTracking.calculationMethod"
     static let profile = "hedaya.worshipPath.profile"
+    static let quranProgress = "hedaya.quran.readingProgress"
 }
 
 final class PrayerTrackingStore: ObservableObject {
@@ -21,6 +22,7 @@ final class PrayerTrackingStore: ObservableObject {
     @Published private(set) var mercyDaysUsedThisWeek: Int = 0
     @Published private(set) var mercyDaysAllowedPerWeek: Int = 2
     @Published private(set) var trackingFeeling: TrackingFeeling? = nil
+    @Published private(set) var quranProgress: QuranReadingProgress = .initial
     @Published var coordinate: CLLocationCoordinate2D? {
         didSet {
             computePrayerTimes()
@@ -54,6 +56,7 @@ final class PrayerTrackingStore: ObservableObject {
         self.calculationMethod = PrayerCalculationMethod(rawValue: methodRaw)
             ?? .muslimWorldLeague
         refreshProgress()
+        self.quranProgress = Self.loadQuranProgress(from: defaults)
     }
 
     /// Gregorian calendar for date keys so storage is consistent regardless of device calendar (e.g. Hijri).
@@ -196,6 +199,8 @@ final class PrayerTrackingStore: ObservableObject {
     private func computePrayerTimes() {
         guard let coord = coordinate else {
             prayerTimes = nil
+            let playAzanSound = defaults.object(forKey: AzanNotificationManager.playAzanSoundKey) as? Bool ?? true
+            AzanNotificationManager.scheduleIfNeeded(prayerTimes: nil, playAzanSound: playAzanSound)
             return
         }
         let dateComponents = Self.gregorian.dateComponents([.year, .month, .day], from: Date())
@@ -222,6 +227,8 @@ final class PrayerTrackingStore: ObservableObject {
             maghrib: adhanTimes.maghrib,
             isha: adhanTimes.isha
         )
+        let playAzanSound = defaults.object(forKey: AzanNotificationManager.playAzanSoundKey) as? Bool ?? true
+        AzanNotificationManager.scheduleIfNeeded(prayerTimes: prayerTimes, playAzanSound: playAzanSound)
     }
 
     func refreshTodayLog() {
@@ -319,5 +326,30 @@ final class PrayerTrackingStore: ObservableObject {
             todayLog = log
         }
         saveDailyLogs()
+    }
+
+    // MARK: - Quran reading progress
+
+    private static func loadQuranProgress(from defaults: UserDefaults) -> QuranReadingProgress {
+        guard let data = defaults.data(forKey: StorageKey.quranProgress),
+              let decoded = try? JSONDecoder().decode(QuranReadingProgress.self, from: data) else {
+            return .initial
+        }
+        return decoded
+    }
+
+    private func saveQuranProgress() {
+        guard let data = try? encoder.encode(quranProgress) else { return }
+        defaults.set(data, forKey: StorageKey.quranProgress)
+    }
+
+    func updateQuranProgress(pageNumber: Int, surahNumber: Int, ayahNumber: Int) {
+        guard quranProgress.lastPageNumber != pageNumber else { return }
+        quranProgress = QuranReadingProgress(
+            lastSurahNumber: surahNumber,
+            lastAyahNumber: ayahNumber,
+            lastPageNumber: pageNumber
+        )
+        saveQuranProgress()
     }
 }

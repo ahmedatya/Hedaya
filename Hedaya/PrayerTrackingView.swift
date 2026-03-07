@@ -131,6 +131,7 @@ private struct PrayerTreeGraphicContainerView: View {
     @State private var showCalculationSettings = false
     @State private var showMercyDaySheet = false
     @State private var azkarGroupToPresent: AzkarGroup?
+    @State private var showQuranReader = false
 
     private var hasTreeArt: Bool {
         Bundle.main.url(forResource: "TreeArt", withExtension: "svg") != nil
@@ -199,6 +200,8 @@ private struct PrayerTreeGraphicContainerView: View {
             if let group = azkarGroupForBranch(.morningZikr) { azkarGroupToPresent = group }
         case .dhikrMasa:
             if let group = azkarGroupForBranch(.eveningZikr) { azkarGroupToPresent = group }
+        case .quran:
+            showQuranReader = true
         default:
             break
         }
@@ -248,12 +251,12 @@ private struct PrayerTreeGraphicContainerView: View {
 
             Group {
                 if hasTreeArt {
-                    PrayerTreeGraphicView(store: store, showDebugOverlay: $showDebugOverlay, onBranchTap: handleBranchTap)
+                    PrayerTreeGraphicView(store: store, showDebugOverlay: $showDebugOverlay, onBranchTap: handleBranchTap, onQuranTap: { showQuranReader = true })
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .padding(.horizontal, 8)
                 } else {
                     ScrollView {
-                        PrayerTreeGraphicView(store: store, showDebugOverlay: $showDebugOverlay, onBranchTap: handleBranchTap)
+                        PrayerTreeGraphicView(store: store, showDebugOverlay: $showDebugOverlay, onBranchTap: handleBranchTap, onQuranTap: { showQuranReader = true })
                             .frame(minHeight: 560)
                             .padding(.vertical, 24)
                             .padding(.horizontal, 16)
@@ -302,6 +305,10 @@ private struct PrayerTreeGraphicContainerView: View {
             }
             .environmentObject(store)
             .environment(\.layoutDirection, .rightToLeft)
+        }
+        .sheet(isPresented: $showQuranReader) {
+            QuranView()
+                .environmentObject(store)
         }
     }
 
@@ -380,10 +387,26 @@ private struct MercyDaySheet: View {
 private struct PrayerCalculationSettingsView: View {
     @ObservedObject var store: PrayerTrackingStore
     @Environment(\.dismiss) private var dismiss
+    @State private var playAzanSound: Bool = (UserDefaults.standard.object(forKey: AzanNotificationManager.playAzanSoundKey) as? Bool) ?? true
 
     var body: some View {
         NavigationStack {
             List {
+                Section {
+                    Toggle(isOn: $playAzanSound) {
+                        Text("تشغيل صوت الأذان")
+                            .foregroundStyle(Color(hex: "2D4A3E"))
+                    }
+                    .onChange(of: playAzanSound) { newValue in
+                        UserDefaults.standard.set(newValue, forKey: AzanNotificationManager.playAzanSoundKey)
+                        AzanNotificationManager.scheduleIfNeeded(prayerTimes: store.prayerTimes, playAzanSound: newValue)
+                    }
+                } header: {
+                    Text("الأذان")
+                } footer: {
+                    Text("عند تفعيله، سيتم تشغيل صوت الأذان عند وقت كل صلاة إذا كان الجهاز غير صامت")
+                }
+
                 Section {
                     ForEach(PrayerCalculationMethod.allCases, id: \.rawValue) { method in
                         Button {
@@ -427,6 +450,7 @@ private struct PrayerTreeGraphicView: View {
     @ObservedObject var store: PrayerTrackingStore
     @Binding var showDebugOverlay: Bool
     var onBranchTap: (BranchType) -> Void = { _ in }
+    var onQuranTap: () -> Void = {}
     @State private var scene: PrayerTreeScene?
     @State private var tapHandler: PrayerTreeTapHandler?
 
@@ -471,7 +495,7 @@ private struct PrayerTreeGraphicView: View {
                             // Quran tracker near trunk
                             let trunkRect = layout.trunkRect
                             Button {
-                                if !store.todayLog.quranDone { store.markQuranDone() }
+                                onQuranTap()
                             } label: {
                                 Text(store.todayLog.quranDone ? "✓ ورد القرآن" : "ورد القرآن")
                                     .font(.system(size: 11, weight: .semibold))
@@ -486,7 +510,6 @@ private struct PrayerTreeGraphicView: View {
                                     )
                             }
                             .buttonStyle(.plain)
-                            .disabled(store.todayLog.quranDone)
                             .position(x: trunkRect.midX, y: trunkRect.midY)
 
                             // Branch trackers near leaves: morning zekr, evening zekr, sleeping zekr, duaa, qiyam
@@ -650,7 +673,7 @@ private struct PrayerTreeGraphicView: View {
             }
             let trunkRect = layout.trunkRect
             Button {
-                if !store.todayLog.quranDone { store.markQuranDone() }
+                onQuranTap()
             } label: {
                 Text(store.todayLog.quranDone ? "✓ ورد القرآن" : "ورد القرآن اليوم")
                     .font(.system(size: 12, weight: .semibold))
@@ -660,7 +683,6 @@ private struct PrayerTreeGraphicView: View {
                     .shadow(color: .white.opacity(0.8), radius: 1, x: 0, y: 0)
             }
             .buttonStyle(.plain)
-            .disabled(store.todayLog.quranDone)
             .frame(width: trunkRect.width + 8, height: trunkRect.height)
             .position(x: trunkRect.midX, y: trunkRect.midY)
             ForEach(Array(BranchType.allCases.enumerated()), id: \.element) { index, branch in

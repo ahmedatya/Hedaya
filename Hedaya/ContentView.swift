@@ -4,6 +4,8 @@ struct ContentView: View {
     let groups = AzkarData.allGroups
     @EnvironmentObject private var prayerTracker: PrayerTrackingStore
     @Environment(\.scenePhase) private var scenePhase
+    @State private var azanCheckTimer: Timer?
+    @State private var showQuranReader = false
 
     var body: some View {
         NavigationStack {
@@ -41,6 +43,11 @@ struct ContentView: View {
                         NavigationLink(destination: GeneralSebhaView()) {
                             GeneralSebhaCard()
                         }
+                        // Quran reader
+                        Button { showQuranReader = true } label: {
+                            QuranCard(isDone: prayerTracker.todayLog.quranDone)
+                        }
+                        .buttonStyle(.plain)
                         ForEach(groups) { group in
                             NavigationLink(destination: AzkarGroupView(group: group)) {
                                 GroupCard(group: group)
@@ -68,11 +75,30 @@ struct ContentView: View {
             )
             .environment(\.layoutDirection, .rightToLeft)
         }
+        .sheet(isPresented: $showQuranReader) {
+            QuranView()
+                .environmentObject(prayerTracker)
+        }
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
                 prayerTracker.refreshTodayLog()  // day may have changed while app was backgrounded
+                checkAndPlayAzanIfNeeded()
+                azanCheckTimer?.invalidate()
+                let timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
+                    checkAndPlayAzanIfNeeded()
+                }
+                RunLoop.main.add(timer, forMode: .common)
+                azanCheckTimer = timer
+            } else {
+                azanCheckTimer?.invalidate()
+                azanCheckTimer = nil
             }
         }
+    }
+
+    private func checkAndPlayAzanIfNeeded() {
+        let playAzanSound = UserDefaults.standard.object(forKey: AzanNotificationManager.playAzanSoundKey) as? Bool ?? true
+        AzanNotificationManager.playAzanIfNeeded(prayerTimes: prayerTracker.prayerTimes, playAzanSound: playAzanSound)
     }
 }
 
@@ -132,6 +158,46 @@ struct GeneralSebhaCard: View {
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
             Text("عدّاد ذكر")
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(.white.opacity(0.85))
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 24)
+        .padding(.horizontal, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(
+                    LinearGradient(
+                        colors: gradientColors,
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .shadow(color: gradientColors[0].opacity(0.4), radius: 8, x: 0, y: 4)
+        )
+    }
+}
+
+// MARK: - Quran Card
+struct QuranCard: View {
+    let isDone: Bool
+    private let gradientColors: [Color] = [Color(hex: "8B6914"), Color(hex: "D4A017")]
+
+    var body: some View {
+        VStack(spacing: 14) {
+            ZStack {
+                Circle()
+                    .fill(.white.opacity(0.25))
+                    .frame(width: 60, height: 60)
+                Image(systemName: isDone ? "book.circle.fill" : "book.fill")
+                    .font(.system(size: 28))
+                    .foregroundStyle(.white)
+            }
+            Text("القرآن الكريم")
+                .font(.system(size: 17, weight: .bold))
+                .foregroundStyle(.white)
+                .multilineTextAlignment(.center)
+            Text(isDone ? "✓ تم الورد" : "اقرأ وردك اليوم")
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(.white.opacity(0.85))
         }
